@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مولّد التقرير المخصص</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--accent:#C84B2F;--text:#f0ede8;--muted:#666;--muted2:#888;--green:#2D6A4F;--green-light:#1a3329}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;direction:rtl}
+#formView{max-width:600px;margin:0 auto;padding:24px 16px}
+.form-logo{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-family:'DM Mono',monospace}
+.form-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px}
+.form-desc{font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:24px}
+.section-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.field-group{margin-bottom:14px}
+.field-label{font-size:11px;font-weight:700;color:var(--muted2);margin-bottom:5px;display:flex;align-items:center;gap:6px;flex-direction:row-reverse;justify-content:flex-end}
+.field-label span{background:var(--accent);color:#fff;font-size:8px;padding:2px 6px;font-weight:700}
+.field-select,.field-input,.field-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;padding:12px 14px;direction:rtl;text-align:right;outline:none;transition:border-color .15s}
+.field-select:focus,.field-input:focus,.field-textarea:focus{border-color:var(--accent)}
+.field-textarea{resize:vertical;min-height:70px;line-height:1.7}
+.field-hint{margin-top:6px;padding:8px 10px;background:#1a1a1a;border:1px solid #2a2a2a;font-size:11px;color:var(--muted);line-height:1.8;text-align:right}
+.generate-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:16px;font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:20px}
+.generate-btn:active{opacity:.85}
+#errMsg{display:none;background:#3a1a1a;border:1px solid var(--accent);color:#ff8a7a;padding:12px 16px;margin-top:12px;font-size:13px;text-align:right}
+#reportView{display:none;max-width:700px;margin:0 auto;padding:20px 16px}
+.back-btn{background:transparent;border:1px solid var(--border);color:var(--muted2);padding:10px 16px;font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;margin-bottom:20px;display:block;width:100%;text-align:center}
+.report-header{background:#1e1a17;border:1px solid #2a2420;padding:28px 24px;margin-bottom:2px;position:relative;overflow:hidden}
+.report-header::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent)}
+.report-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.report-company{font-size:22px;font-weight:900;color:var(--text);line-height:1.2;margin-bottom:8px}
+.report-meta{font-size:12px;color:var(--muted2);line-height:2}
+.report-section{background:#1a1a1a;border:1px solid var(--border);margin-bottom:2px}
+.section-header-bar{background:#222;padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-direction:row-reverse;justify-content:flex-end}
+.section-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);font-weight:500}
+.section-name{font-size:13px;font-weight:700;color:var(--text)}
+.section-body{padding:18px}
+.wish-box{background:#1a2a1a;border-right:3px solid #4CAF50;padding:14px 16px;margin-bottom:16px}
+.wish-label{font-family:'DM Mono',monospace;font-size:9px;color:#4CAF50;letter-spacing:.1em;margin-bottom:6px;text-align:right}
+.wish-text{font-size:14px;font-weight:700;color:var(--text);text-align:right;line-height:1.6}
+.wish-link{font-size:12px;color:var(--muted2);margin-top:4px;text-align:right;line-height:1.7}
+.pain-item{border-right:3px solid var(--accent);padding:12px 14px;background:#1f1f1f;margin-bottom:8px}
+.pain-item:last-child{margin-bottom:0}
+.pain-item-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;text-align:right}
+.pain-item-desc{font-size:12px;color:var(--muted2);line-height:1.75;text-align:right}
+.pain-item-cost{margin-top:6px;font-size:11px;font-family:'DM Mono',monospace;color:var(--accent);text-align:right}
+.opp-highlight{background:linear-gradient(135deg,#1e2820,#192318);border:1px solid #2d4a35;padding:16px 18px;margin-bottom:14px}
+.opp-label{font-family:'DM Mono',monospace;font-size:9px;color:#4CAF50;letter-spacing:.12em;margin-bottom:6px;text-align:right}
+.opp-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;text-align:right}
+.opp-desc{font-size:12px;color:var(--muted2);line-height:1.8;text-align:right}
+.opp-tool{margin-top:8px;font-size:11px;color:#4CAF50;font-family:'DM Mono',monospace;text-align:right}
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);margin-bottom:14px}
+.metric-cell{background:#1f1f1f;padding:12px;text-align:right}
+.metric-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.metric-label{font-size:10px;color:var(--muted2);line-height:1.5}
+.plan-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;text-align:right;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.day-item{background:#1f1f1f;margin-bottom:2px;padding:14px 16px;display:flex;gap:14px;flex-direction:row-reverse;align-items:flex-start}
+.day-item.active{background:var(--green-light);border-right:3px solid var(--green)}
+.day-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);flex-shrink:0;width:48px;text-align:center;padding-top:2px;font-weight:700}
+.day-item.active .day-num{color:#81c784}
+.day-content{text-align:right;flex:1}
+.day-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px}
+.day-item.active .day-title{color:#81c784}
+.day-steps{font-size:11px;color:var(--muted2);line-height:1.9;list-style:none}
+.day-steps li::before{content:'← ';color:var(--accent);font-size:10px}
+.barrier-note{background:#1f1a10;border-right:3px solid #B5620A;padding:12px 14px;margin-bottom:14px}
+.barrier-label{font-family:'DM Mono',monospace;font-size:9px;color:#B5620A;letter-spacing:.1em;margin-bottom:4px;text-align:right}
+.barrier-text{font-size:12px;color:#e8c87a;line-height:1.7;text-align:right}
+.bridge-note{margin-top:12px;padding:12px 14px;background:#1a1a1a;border-right:2px solid var(--muted);font-size:12px;color:var(--muted2);line-height:1.8;font-style:italic;text-align:right}
+.cta-block{background:#1e2830;border:1px solid #2a3a4a;padding:24px;margin-top:2px}
+.cta-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;text-align:right}
+.cta-desc{font-size:12px;color:var(--muted2);line-height:1.8;margin-bottom:16px;text-align:right}
+.cta-stats{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);margin-bottom:16px}
+.cta-stat{background:#1f1f1f;padding:10px 12px;text-align:right}
+.cta-stat-num{font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--accent)}
+.cta-stat-label{font-size:10px;color:var(--muted2);margin-top:2px;line-height:1.4}
+.cta-btn{display:block;background:var(--accent);padding:14px;text-align:center;text-decoration:none;cursor:pointer;border:none;width:100%;font-family:'Cairo',sans-serif}
+.cta-btn-main{font-size:14px;font-weight:700;color:#fff;display:block}
+.cta-btn-sub{font-size:10px;color:rgba(255,255,255,.65);margin-top:4px;display:block}
+.no-pitch{margin-top:10px;font-size:11px;color:var(--muted);text-align:center;font-style:italic}
+@media print{.back-btn{display:none}}
+</style>
+</head>
+<body>
+
+<div id="formView">
+  <div style="margin-bottom:28px">
+    <div class="form-logo">⚡ مولّد التقرير المخصص</div>
+    <div class="form-title">بيانات التقرير</div>
+    <div class="form-desc">أدخل إجابات الاستبيان — التقرير يُنشأ فوراً</div>
+  </div>
+
+  <div class="section-label">بيانات الشركة</div>
+  <div class="field-group">
+    <div class="field-label"><span>Q1</span> القطاع الفرعي</div>
+    <select class="field-select" id="sector">
+      <option value="">اختر القطاع</option>
+      <option value="freight">شحن دولي وتخليص جمركي</option>
+      <option value="lastmile">توصيل ومخازن داخلية</option>
+      <option value="3pl">مزود لوجستي متكامل (3PL)</option>
+      <option value="land">نقل بري وأسطول</option>
+      <option value="industrial">سلاسل توريد صناعية</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <div class="field-label"><span>Q2</span> عدد الموظفين</div>
+    <select class="field-select" id="size">
+      <option value="">اختر</option>
+      <option value="small">أقل من 50 موظف</option>
+      <option value="medium">50 – 200 موظف</option>
+      <option value="large">200 – 500 موظف</option>
+      <option value="xlarge">أكثر من 500</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <div class="field-label"><span>Q2</span> الدولة / المدينة</div>
+    <input type="text" class="field-input" id="location" placeholder="مثال: القاهرة، مصر">
+  </div>
+
+  <div class="section-label">الوضع التشغيلي</div>
+  <div class="field-group">
+    <div class="field-label"><span>Q3</span> إدارة الموردين حالياً</div>
+    <select class="field-select" id="supplier_mgmt">
+      <option value="">اختر</option>
+      <option value="manual">يدوياً — إيميلات وExcel فقط</option>
+      <option value="partial">TMS/ERP لكن متابعة يدوية جزئياً</option>
+      <option value="automated">نظام متكامل تلقائي</option>
+      <option value="none">لا نتابع بشكل منتظم</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <div class="field-label"><span>Q4</span> أين يضيع أكثر وقت فريقك؟</div>
+    <select class="field-select" id="time_waste">
+      <option value="">اختر</option>
+      <option value="tracking">متابعة الشحنات وإبلاغ العملاء</option>
+      <option value="documents">إدخال المستندات والفواتير يدوياً</option>
+      <option value="reports">بناء التقارير الأسبوعية والشهرية</option>
+      <option value="suppliers">متابعة الموردين وعقودهم</option>
+      <option value="customers">الرد على استفسارات العملاء المتكررة</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <div class="field-label"><span>Q5</span> عدد الموردين النشطين</div>
+    <select class="field-select" id="supplier_count">
+      <option value="">اختر</option>
+      <option value="few">أقل من 10</option>
+      <option value="medium">10 – 50 مورداً</option>
+      <option value="many">أكثر من 50</option>
+    </select>
+  </div>
+
+  <div class="section-label">جاهزية الذكاء الاصطناعي</div>
+  <div class="field-group">
+    <div class="field-label"><span>Q6</span> مستوى تبني AI حالياً</div>
+    <select class="field-select" id="ai_status">
+      <option value="">اختر</option>
+      <option value="none">لم نجرب أي أداة بعد</option>
+      <option value="individual">أفراد يستخدمون ChatGPT بدون استراتيجية</option>
+      <option value="pilot">مشروع تجريبي في قسم واحد</option>
+      <option value="integrated">ندمج AI في أكثر من عملية</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <div class="field-label"><span>Q7</span> أكبر عائق أمام تبني AI</div>
+    <select class="field-select" id="barrier">
+      <option value="">اختر</option>
+      <option value="knowledge">لا نعرف من أين نبدأ</option>
+      <option value="budget">الميزانية محدودة</option>
+      <option value="time">الفريق لا يملك الوقت</option>
+      <option value="trust">لا ثقة كافية في دقة AI</option>
+      <option value="data">البيانات غير منظمة</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <div class="field-label"><span>Q8</span> لو تحسّن شيء واحد في 90 يوماً — ماذا سيكون؟</div>
+    <textarea class="field-textarea" id="wish"></textarea>
+  </div>
+
+  <button class="generate-btn" onclick="generateReport()">⚡ ولّد التقرير الآن</button>
+  <div id="errMsg">يرجى ملء الحقول الأساسية: Q1 و Q2 و Q3 و Q4 و Q6 و Q7</div>
+</div>
+
+<div id="reportView">
+  <button class="back-btn" onclick="showForm()">← العودة لإدخال البيانات</button>
+  <div id="reportContent"></div>
+</div>
+
+<script>
+// ════════════════════════════════
+// SECTOR DATA
+// ════════════════════════════════
+const sectors = {
+  freight:{
+    name:'شحن دولي وتخليص جمركي',
+    pains:{
+      tracking:{title:'متابعة الشحنات عبر أكثر من مزود يدوياً',desc:'فريقك يتنقل بين بوابات شركات الشحن يجمع التحديثات ويُبلغ العميل واحداً واحداً — 2-3 ساعات يومياً في مهمة لا تحتاج عقلاً بشرياً.',cost:'2-3 ساعات يومياً × عدد الموظفين = عشرات الآلاف سنوياً'},
+      documents:{title:'إدخال بيانات المستندات الجمركية يدوياً',desc:'كل شحنة تمر بإدخال يدوي كامل — وخطأ واحد في HS Code أو الوزن يوقف البضاعة في الجمارك لأيام. 40-60% من أخطاء الامتثال تأتي من هذه الخطوة.',cost:'يوم توقف = تكلفة تخزين + غرامات + خسارة ثقة العميل'},
+      reports:{title:'تقارير الشحنات تُبنى يدوياً لكل عميل',desc:'موظف يجلس أسبوعياً يجمع بيانات الشحنات ويبنيها في تقرير — وبحلول إرساله تكون بعض البيانات قد تغيرت.',cost:'يوم كامل أسبوعياً في تقارير يمكن توليدها في دقائق'},
+      suppliers:{title:'إدارة عقود شركات الشحن وتجديداتها يدوياً',desc:'تواريخ التجديد مدفونة في PDFs والأسعار المتفق عليها لا يراجعها أحد — حتى يكتشف أحدهم أن الشركة تدفع أسعاراً قديمة.',cost:'حتى 9% من الربحية السنوية تضيع من عقود لا تُتابع'},
+      customers:{title:'فريق خدمة العملاء يرد على نفس الأسئلة يومياً',desc:'70-80% من استفسارات العملاء متكررة: أين شحنتي؟ متى تصل؟ ما حالة التخليص؟ — وكل رد يأخذ وقتاً من موظف يمكن أن يُستبدل بنظام تلقائي.',cost:'↑40% وقت خدمة العملاء في استفسارات يمكن أتمتتها'}
+    },
+    opp:{
+      tracking:{title:'أتمتة متابعة الشحنات وإشعار العملاء',desc:'AI Agent يراقب كل الشحنات لحظة بلحظة ويرسل تحديثات تلقائية للعملاء عند كل تغيير — بدون أي تدخل بشري.',tool:'Make.com + ChatGPT API + SMS/Email automation',m1:'2-3h',l1:'موفرة يومياً لكل منسق',m2:'↓40%',l2:'شكاوى من تأخر التحديثات'},
+      documents:{title:'أتمتة استخراج بيانات المستندات الجمركية',desc:'AI يقرأ المستندات ويستخرج البيانات ويملأ النماذج تلقائياً — ويتحقق من صحتها قبل الإرسال.',tool:'Make.com + ChatGPT API + Google Sheets',m1:'60%',l1:'تقليل أخطاء الإدخال الجمركي',m2:'3h',l2:'موفرة يومياً لكل منسق شحن'},
+      reports:{title:'توليد تقارير الشحنات التلقائية لكل عميل',desc:'نظام يسحب البيانات ويولّد التقرير بتنسيق كل عميل ويرسله تلقائياً في الموعد المحدد.',tool:'Airtable + Make.com + Google Docs templates',m1:'1 يوم',l1:'موفر أسبوعياً في التقارير',m2:'فوري',l2:'بدلاً من تقارير متأخرة'},
+      suppliers:{title:'نظام ذكي لمراقبة عقود شركات الشحن',desc:'AI يراقب تواريخ التجديد والأسعار المتفق عليها ويرسل تنبيهات مبكرة قبل أي انتهاء أو انحراف.',tool:'Airtable + Make.com + WhatsApp/Email alerts',m1:'9%',l1:'من الربحية مستردة من عقود أفضل',m2:'75%',l2:'تقليل المدفوعات الخاطئة'},
+      customers:{title:'AI Agent للرد التلقائي على استفسارات العملاء',desc:'نظام يرد على 80% من الاستفسارات المتكررة تلقائياً — ويحول فقط الحالات المعقدة للفريق البشري.',tool:'ChatGPT API + WhatsApp Business API',m1:'80%',l1:'من الاستفسارات المتكررة مؤتمتة',m2:'↑35%',l2:'رضا العملاء'}
+    },
+    plan:{
+      tracking:[{day:'اليوم 1',title:'حصر مصادر تحديثات الشحنات الحالية',steps:['اجمع كل البوابات التي يدخلها فريقك يومياً','سجل: كم مرة يتحقق كل موظف من حالة الشحنة؟','حدد: أي العملاء يتصلون أكثر ليسألوا عن شحناتهم؟'],active:true},{day:'اليوم 2',title:'إنشاء حساب Make.com وفهم الـ Scenarios',steps:['سجل في make.com مجاناً','شاهد الفيديو التعريفي (15 دقيقة)','أنشئ Scenario تجريبي فارغ']},{day:'اليوم 3',title:'بناء أول سيناريو تتبع',steps:['Trigger: تحديث في Google Sheet (حالة الشحنة)','Action: إرسال إيميل أو SMS للعميل تلقائياً','اختبر على شحنة واحدة حقيقية']},{day:'اليوم 4',title:'كتابة نصوص الإشعارات الثلاثة',steps:['نص "خرجت للشحن": رقم الشحنة + التاريخ المتوقع','نص "وصلت الجمارك": الحالة + الخطوة التالية','نص "تأخير": الاعتذار + ETA الجديد']},{day:'اليوم 5',title:'اختبار على 5 شحنات حقيقية',steps:['شغّل الأتمتة على 5 شحنات نشطة','راقب وصول الإشعارات للعملاء','سجل الأخطاء وعدّل']},{day:'اليوم 6',title:'تدريب الفريق على التحديث الصحيح',steps:['علّم الفريق كيف يحدّثون الـ Sheet','أنشئ Google Form بسيط للتحديث السريع','تأكد أن كل تحديث يطلق الإشعار تلقائياً']},{day:'اليوم 7',title:'قياس الأثر وقرار التوسع',steps:['قارن شكاوى العملاء قبل وبعد','قِس الوقت الذي وفّره مدير العمليات','قرر: هل توسع لباقي أنواع الشحنات؟']}],
+      documents:[{day:'اليوم 1',title:'حصر المستندات المتكررة',steps:['اجمع آخر 10 شحنات وحدد المستندات المتكررة','سجل: ما البيانات التي تُدخلها يدوياً في كل مرة؟','حدد أكثر مستند يتسبب في أخطاء أو تأخير'],active:true},{day:'اليوم 2',title:'إنشاء حساب Make.com',steps:['سجل في make.com مجاناً','افهم مفهوم الـ Scenario والـ Modules','شاهد مثالاً على استخراج بيانات من PDF']},{day:'اليوم 3',title:'بناء أول سيناريو استخراج',steps:['Trigger: وصول مستند على الإيميل','Module: ChatGPT — Prompt: "استخرج من هذا المستند: المصدر، الوزن، القيمة، HS Code"','Action: أضف البيانات في Google Sheet تلقائياً']},{day:'اليوم 4',title:'اختبار على 5 مستندات حقيقية',steps:['شغّل الأتمتة على 5 مستندات من الأرشيف','قارن النتائج بالبيانات الفعلية','سجل نسبة الدقة ونقاط التحسين']},{day:'اليوم 5',title:'تحسين الـ Prompt',steps:['عدّل Prompt بناءً على الأخطاء','أضف تعليمات للحالات الاستثنائية','أعد الاختبار وقِس التحسن']},{day:'اليوم 6',title:'ربط المخرجات بنظام التخليص',steps:['صدّر البيانات المستخرجة للنظام الجمركي','تحقق من التوافق مع النماذج المطلوبة','شغّل على شحنة حقيقية قادمة']},{day:'اليوم 7',title:'قياس الوقت الموفر',steps:['قارن وقت التوثيق قبل وبعد','احسب تكلفة الأخطاء الجمركية الموفرة','قرر: هل توسع لأنواع مستندات أخرى؟']}],
+      reports:[{day:'اليوم 1',title:'جرد تقارير كل عميل',steps:['اجمع نماذج التقارير التي يطلبها كل عميل','حدد البيانات المشتركة بين كل التقارير','حدد البيانات الخاصة بكل عميل'],active:true},{day:'اليوم 2',title:'إنشاء قاعدة بيانات موحدة في Airtable',steps:['أنشئ حساب Airtable مجاناً','أنشئ جدول "شحنات" بالحقول المشتركة','أضف عمود "العميل" للتصفية']},{day:'اليوم 3',title:'Template التقرير لأول عميل',steps:['اختر العميل الأكثر تكراراً في الطلبات','أنشئ View في Airtable مفلترة ببياناته','صمم Template في Google Docs']},{day:'اليوم 4',title:'أتمتة توليد التقرير',steps:['اربط Airtable بـ Make.com','Scenario: كل أسبوع → اسحب البيانات → ملأ Template → أرسل للعميل','اختبر على بيانات الأسبوع الماضي']},{day:'اليوم 5',title:'اختبار مع العميل الأول',steps:['أرسل التقرير التلقائي للعميل','اطلب رأيه في التنسيق','سجل أي تعديلات مطلوبة']},{day:'اليوم 6',title:'تطبيق على عميل ثانٍ',steps:['كرر نفس العملية مع عميل آخر','استخدم Template الأساسي مع تخصيص بسيط','قِس الوقت مقارنة بالطريقة اليدوية']},{day:'اليوم 7',title:'قياس الوفر وخطة التوسع',steps:['احسب الوقت الموفر × 52 أسبوعاً','قرر: هل تضيف باقي العملاء؟','حدد الخطوة التالية في الأتمتة']}],
+      suppliers:[{day:'اليوم 1',title:'جرد عقود شركات الشحن الحالية',steps:['اجمع كل عقود الموردين في مكان واحد','سجل: تاريخ الانتهاء، السعر المتفق عليه، شروط التجديد','حدد أقرب 3 عقود للانتهاء'],active:true},{day:'اليوم 2',title:'إنشاء جدول العقود في Airtable',steps:['أنشئ Airtable بأعمدة: المورد، تاريخ الانتهاء، السعر، شروط التجديد','لوّن الصفوف: أحمر (أقل من 30 يوم)، أصفر (30-90 يوم)','تحقق من البيانات مع الفريق']},{day:'اليوم 3',title:'إنشاء تنبيهات التجديد في Make.com',steps:['Scenario: يفحص يومياً إذا اقترب عقد من الانتهاء','Condition: أقل من 60 يوم للانتهاء','Action: تنبيه WhatsApp للمسؤول بتفاصيل العقد']},{day:'اليوم 4',title:'مراقبة الأسعار المتفق عليها',steps:['أضف عمود "السعر الفعلي المدفوع" في كل فاتورة','Make.com: قارن السعر الفعلي بالمتفق عليه','تنبيه فوري عند أي انحراف بنسبة أكثر من 5%']},{day:'اليوم 5',title:'اختبار النظام لأسبوع كامل',steps:['شغّل التنبيهات على العقود الحالية','تحقق: هل وصلت التنبيهات في الوقت المناسب؟','عدّل الـ Thresholds بناءً على الواقع']},{day:'اليوم 6',title:'تقرير أداء الموردين الأسبوعي',steps:['Airtable View: أداء كل مورد (التزام بالمواعيد، الجودة، الأسعار)','Make.com: أرسل التقرير أسبوعياً للمدير','قارن الموردين ببعضهم بشكل موضوعي']},{day:'اليوم 7',title:'قرار المراجعة والتوسع',steps:['راجع النتائج مع فريق المشتريات','حدد موردين يستحقون إعادة التفاوض','قرر: هل توسع لموردين الخدمات الأخرى؟']}],
+      customers:[{day:'اليوم 1',title:'حصر الأسئلة المتكررة',steps:['اجمع آخر 50 استفساراً من العملاء','صنّفها: ما النسبة المتكررة؟','حدد أكثر 5 أسئلة تكراراً'],active:true},{day:'اليوم 2',title:'كتابة إجابات نموذجية لكل سؤال',steps:['اكتب إجابة مثالية لكل سؤال متكرر','راجعها مع فريق خدمة العملاء','وثّقها في Google Doc']},{day:'اليوم 3',title:'إعداد ChatGPT API',steps:['أنشئ حساب OpenAI وأضف رصيد بسيط ($10 تكفي للبداية)','ابنِ System Prompt يشرح لـ AI طبيعة شركتك وأسلوب التواصل','اختبر على الأسئلة المتكررة']},{day:'اليوم 4',title:'ربط AI بقناة التواصل',steps:['WhatsApp Business API: اربطه بـ Make.com','Trigger: رسالة واردة من عميل','Action: ChatGPT يحلل السؤال ويرد تلقائياً']},{day:'اليوم 5',title:'اختبار على عملاء حقيقيين',steps:['شغّل النظام على مجموعة صغيرة من العملاء','راقب جودة الردود','حدد الأسئلة التي تحتاج تدخلاً بشرياً']},{day:'اليوم 6',title:'إضافة نظام التحويل البشري',steps:['إذا كان السؤال معقداً: AI يحول للموظف المسؤول','أضف تنبيهاً للفريق عند التحويل','سجّل كل حالة تحويل لتحسين النظام']},{day:'اليوم 7',title:'قياس الأثر الكامل',steps:['قارن حجم الاستفسارات التي يردّ عليها الفريق قبل وبعد','قِس رضا العملاء','قرر: هل توسع لقنوات تواصل أخرى؟']}]
+    }
+  },
+  lastmile:{
+    name:'توصيل ومخازن داخلية',
+    pains:{
+      tracking:{title:'تتبع السائقين والتسليمات يدوياً كل يوم',desc:'مدير العمليات يقضي صباحه يتصل بالسائقين ويجمع تحديثات التسليم يدوياً — 2-3 ساعات في مهمة يمكن أن تحدث تلقائياً بالكامل.',cost:'2-3 ساعات يومياً + تأخر الإشعارات يسبب شكاوى عملاء'},
+      documents:{title:'إدخال بيانات الطلبات والفواتير يدوياً',desc:'كل طلب جديد يُدخَل يدوياً في النظام — والفواتير تُحضَّر بعد كل تسليم من بيانات متفرقة. هذا يستهلك ساعات ويحتمل أخطاء في الحسابات.',cost:'3-4 ساعات أسبوعياً في إعداد فواتير + أخطاء في التسعير'},
+      reports:{title:'تقارير الأداء اليومي والأسبوعي تُبنى يدوياً',desc:'71% من الأقسام التشغيلية تقضي يوماً كاملاً أسبوعياً في بناء التقارير — وبحلول وصولها يكون الوضع قد تغير.',cost:'متوسط 23,730$ سنوياً في رواتب لمجرد وظيفة التقارير'},
+      suppliers:{title:'إدارة موردي التغليف والمستلزمات بدون نظام',desc:'طلبات إعادة التخزين تحدث عند النفاد لا قبله — وكل مرة تنفد مادة تغليف حرجة يتوقف التسليم ويتضرر العميل.',cost:'نقص مفاجئ في مستلزمات التشغيل = تأخر التسليم + خسارة العميل'},
+      customers:{title:'فريق خدمة العملاء يرد على نفس الأسئلة',desc:'أين طلبي؟ متى يصل؟ هل يمكن تغيير العنوان؟ — نفس الأسئلة كل يوم لكل عميل. 70-80% منها يمكن أتمتتها بالكامل.',cost:'↑40% وقت الفريق في استفسارات متكررة قابلة للأتمتة'}
+    },
+    opp:{
+      tracking:{title:'AI Agent لمتابعة التسليم وإشعار العملاء تلقائياً',desc:'نظام يتابع كل تسليم ويرسل إشعاراً للعميل عند كل تحديث — السائق يحدث الحالة مرة واحدة والعميل يتلقى الإشعار فوراً.',tool:'Zapier + WhatsApp API أو SMS API',m1:'↓40%',l1:'شكاوى العملاء من غياب التحديثات',m2:'2h',l2:'موفرة يومياً لمدير العمليات'},
+      documents:{title:'أتمتة إدخال الطلبات وإصدار الفواتير',desc:'نظام يستقبل الطلبات ويدخلها تلقائياً ويولّد الفاتورة بعد التسليم مباشرة — بدون أي تدخل يدوي.',tool:'Make.com + Google Sheets + PDF invoice generator',m1:'4h',l1:'موفرة أسبوعياً في إعداد الفواتير',m2:'↓90%',l2:'أخطاء التسعير والحسابات'},
+      reports:{title:'لوحة أداء يومية تلقائية للعمليات',desc:'نظام يجمع بيانات التسليم ويولّد تقرير الأداء اليومي تلقائياً ويرسله للمدير قبل بداية يوم العمل.',tool:'Google Sheets + Make.com + WhatsApp/Email',m1:'1 يوم',l1:'موفر أسبوعياً في بناء التقارير',m2:'فوري',l2:'تقارير جاهزة قبل بدء العمل'},
+      suppliers:{title:'نظام تنبيه ذكي لإعادة تخزين المستلزمات',desc:'نظام يراقب مستوى المخزون ويرسل تنبيه إعادة الطلب قبل النفاد بوقت كافٍ — لا توقف مفاجئ ولا طلبات طارئة.',tool:'Google Sheets + Make.com + Supplier WhatsApp alerts',m1:'↓80%',l1:'حالات نقص مفاجئ في المستلزمات',m2:'15%',l2:'توفير في تكاليف الطلبات الطارئة'},
+      customers:{title:'AI Agent للرد الفوري على استفسارات العملاء',desc:'نظام يرد على 80% من الاستفسارات تلقائياً — ويحول فقط الحالات المعقدة للفريق البشري.',tool:'ChatGPT API + WhatsApp Business API',m1:'80%',l1:'من الاستفسارات مؤتمتة',m2:'↑35%',l2:'رضا العملاء'}
+    },
+    plan:{
+      tracking:[{day:'اليوم 1',title:'رسم رحلة التسليم الحالية',steps:['ارسم كل خطوة من استلام الطلب للتسليم','حدد: في أي نقطة يُبلَّغ العميل الآن؟','كم مرة يتصل العملاء ليسألوا عن طلباتهم؟'],active:true},{day:'اليوم 2',title:'اختيار قناة الإشعار',steps:['قرر: WhatsApp أم SMS أم Email؟','WhatsApp: سجل في Twilio أو 360dialog','SMS: سجل في Twilio أو Vonage (خطة مجانية للاختبار)']},{day:'اليوم 3',title:'إنشاء أول Zap في Zapier',steps:['سجل في zapier.com مجاناً','Trigger: تحديث في Google Sheet (حالة التسليم)','Action: إرسال رسالة عبر القناة المختارة']},{day:'اليوم 4',title:'كتابة نصوص الإشعارات',steps:['نص "خرج للتسليم": "طلبك رقم [X] في الطريق — سائقك [اسم] سيصل بين [وقت]"','نص "تم التسليم": "تم تسليم طلبك بنجاح. شكراً لثقتك"','نص "تأخير": "نعتذر — طلبك سيتأخر قليلاً. سنحدثك فور التسليم"']},{day:'اليوم 5',title:'اختبار على 3 طلبات حقيقية',steps:['شغّل الأتمتة على 3 طلبات نشطة','راقب وصول الإشعارات','اتصل بأحد العملاء وتحقق من استلامه']},{day:'اليوم 6',title:'تدريب السائقين على التحديث',steps:['علّم السائقين كيف يحدّثون الحالة','أنشئ Google Form بسيط للتحديث','تأكد أن كل تحديث يطلق الإشعار']},{day:'اليوم 7',title:'قياس الأثر وقرار التوسع',steps:['قارن شكاوى العملاء قبل وبعد','قِس الوقت الموفر لمدير العمليات','قرر: هل تضيف إشعارات لمراحل أخرى؟']}],
+      documents:[{day:'اليوم 1',title:'حصر عمليات إدخال البيانات الحالية',steps:['كم وقت يأخذ إدخال طلب واحد؟','كم فاتورة تُحضَّر أسبوعياً؟','ما الأخطاء الأكثر تكراراً في الفواتير؟'],active:true},{day:'اليوم 2',title:'إنشاء نموذج استقبال الطلبات',steps:['أنشئ Google Form لاستقبال الطلبات','اربطه بـ Google Sheet تلقائياً','تأكد من وصول البيانات بشكل صحيح']},{day:'اليوم 3',title:'بناء Template الفاتورة',steps:['صمم Template فاتورة في Google Docs','أضف الحقول: العميل، الطلبات، السعر، الإجمالي','اختبر التنسيق على فاتورة يدوية']},{day:'اليوم 4',title:'أتمتة إصدار الفاتورة',steps:['Make.com: عند تحديث حالة التسليم لـ "تم"','اسحب بيانات الطلب من الـ Sheet','ملأ Template وأرسل PDF للعميل تلقائياً']},{day:'اليوم 5',title:'اختبار على 5 طلبات',steps:['شغّل الأتمتة على 5 طلبات منتهية','تحقق من صحة الفاتورة','سجل الأخطاء وعدّل']},{day:'اليوم 6',title:'تدريب الفريق على النظام الجديد',steps:['علّم الفريق كيف يدخل الطلبات عبر الـ Form','تأكد أن البيانات تصل للـ Sheet بشكل صحيح','شغّل النظام لأسبوع بينما تتحقق يدوياً']},{day:'اليوم 7',title:'قياس الوفر الكامل',steps:['قارن وقت إعداد الفواتير قبل وبعد','احسب التوفير السنوي','قرر: هل تضيف تكامل مع نظام المحاسبة؟']}],
+      reports:[{day:'اليوم 1',title:'تحديد مؤشرات الأداء المهمة',steps:['ما الأرقام التي تريد رؤيتها يومياً؟','عدد التسليمات، نسبة الالتزام بالمواعيد، شكاوى العملاء','حدد من يحتاج التقرير ومتى؟'],active:true},{day:'اليوم 2',title:'إنشاء جدول البيانات المركزي',steps:['Google Sheet بأعمدة: التاريخ، عدد التسليمات، التأخيرات، الشكاوى','اجعل الفريق يحدّثه يومياً','تأكد من اتساق تنسيق البيانات']},{day:'اليوم 3',title:'بناء لوحة الأداء في Sheets',steps:['أنشئ Dashboard يحسب: نسبة الالتزام بالمواعيد، متوسط الشكاوى اليومية','استخدم Charts لتصوير البيانات','اجعله يتحدث تلقائياً مع كل إدخال']},{day:'اليوم 4',title:'أتمتة إرسال التقرير اليومي',steps:['Make.com: كل صباح الساعة 8 → اسحب بيانات أمس','ولّد ملخصاً نصياً بـ ChatGPT','أرسله على WhatsApp للمدير']},{day:'اليوم 5',title:'اختبار لأسبوع كامل',steps:['راقب التقارير اليومية لأسبوع','تحقق من دقة البيانات','أضف أي مؤشرات فاتتك']},{day:'اليوم 6',title:'إضافة تنبيهات الاستثناءات',steps:['إذا تجاوزت نسبة التأخير 10%: تنبيه فوري','إذا وصلت شكوى جديدة: إشعار للمدير','اجعل النظام يتفاعل مع المشاكل لا فقط يرصدها']},{day:'اليوم 7',title:'مراجعة وتوسع',steps:['قارن جودة القرارات قبل وبعد التقارير الفورية','قرر: هل تضيف تقريراً أسبوعياً أشمل؟','حدد KPIs إضافية تريد متابعتها']}],
+      suppliers:[{day:'اليوم 1',title:'جرد مستلزمات التشغيل',steps:['اجمع كل مواد التغليف والمستلزمات','سجل: الكمية الحالية لكل مادة','حدد معدل الاستهلاك الأسبوعي'],active:true},{day:'اليوم 2',title:'حساب نقاط إعادة الطلب',steps:['لكل مادة: نقطة إعادة الطلب = استهلاك أسبوعي × 2','أضف هذه النقاط في Google Sheet','لوّن: أحمر (دون النقطة)، أصفر (قريب منها)، أخضر (آمن)']},{day:'اليوم 3',title:'إنشاء تنبيهات النقص في Make.com',steps:['Scenario: يفحص الـ Sheet يومياً','Condition: إذا وصل المخزون لنقطة إعادة الطلب','Action: تنبيه WhatsApp للمسؤول عن المشتريات']},{day:'اليوم 4',title:'ربط المورد بالتنبيه',steps:['أضف عمود "مورد هذه المادة" في الـ Sheet','التنبيه يتضمن: اسم المادة، الكمية المطلوبة، بيانات الاتصال بالمورد','اجعله جاهزاً للطلب الفوري']},{day:'اليوم 5',title:'اختبار النظام',steps:['نقّص يدوياً كمية مادة لتصل لنقطة التنبيه','تحقق من وصول التنبيه','تأكد أن المعلومات كاملة ودقيقة']},{day:'اليوم 6',title:'تسجيل أداء الموردين',steps:['أضف جدول الموردين: الاسم، وقت التوريد، الجودة، السعر','سجل كل عملية شراء','ابنِ تقرير مقارنة الموردين كل شهر']},{day:'اليوم 7',title:'قياس الأثر',steps:['كم مرة حدث نقص مفاجئ قبل النظام؟','هل انخفضت تكاليف الطلبات الطارئة؟','قرر: هل توسع لمستلزمات أخرى؟']}],
+      customers:[{day:'اليوم 1',title:'حصر الأسئلة المتكررة',steps:['اجمع آخر 50 رسالة من العملاء','صنّفها وحدد الأكثر تكراراً','حدد: أيها يمكن الرد عليه تلقائياً؟'],active:true},{day:'اليوم 2',title:'كتابة إجابات نموذجية',steps:['اكتب إجابة مثالية لكل سؤال متكرر','راجعها مع فريق خدمة العملاء','وثّقها في Google Doc']},{day:'اليوم 3',title:'إعداد ChatGPT API',steps:['أنشئ حساب OpenAI ($10 تكفي للبداية)','ابنِ System Prompt يشرح طبيعة شركتك','اختبر على الأسئلة المتكررة']},{day:'اليوم 4',title:'ربط AI بـ WhatsApp',steps:['WhatsApp Business API عبر Twilio أو 360dialog','Make.com: رسالة واردة → ChatGPT يحللها ويرد','اختبر على رسائل حقيقية']},{day:'اليوم 5',title:'اختبار على عملاء حقيقيين',steps:['شغّل النظام على مجموعة صغيرة','راقب جودة الردود','حدد الحالات التي تحتاج تدخلاً بشرياً']},{day:'اليوم 6',title:'إضافة نظام التحويل البشري',steps:['إذا كان السؤال معقداً: AI يحول للموظف المسؤول','تنبيه للفريق عند التحويل','سجّل كل حالة تحويل لتحسين النظام']},{day:'اليوم 7',title:'قياس الأثر الكامل',steps:['قارن حجم الاستفسارات التي يردّ عليها الفريق','قِس رضا العملاء','قرر: هل توسع لقنوات أخرى؟']}]
+    }
+  }
+};
+
+// نسخ باقي القطاعات من نفس البنية
+sectors['3pl'] = {
+  name:'مزود لوجستي متكامل (3PL)',
+  pains:{
+    tracking:{title:'متابعة شحنات عملاء متعددين بأنظمة مختلفة',desc:'كل عميل له نظام ومتطلبات مختلفة — فريقك يقضي وقته في الترجمة والتحويل بدلاً من العمل الفعلي. 30-40% من وقت الفريق في تنسيق البيانات.',cost:'30-40% من وقت الفريق ضائع في التنسيق لا في العمل الفعلي'},
+    documents:{title:'مستندات كل عميل بتنسيقات مختلفة تُعالج يدوياً',desc:'كل عميل له نماذج وتنسيقات مختلفة — والفريق يعيد إدخال نفس البيانات بأشكال مختلفة عدة مرات يومياً.',cost:'إدخال مزدوج يستنزف 3-5 ساعات يومياً من كل منسق'},
+    reports:{title:'تقرير مخصص لكل عميل يُبنى يدوياً كل أسبوع',desc:'يوم عمل كامل أسبوعياً في بناء تقارير لكل عميل بتنسيقه المطلوب — وبحلول إرساله تكون بعض البيانات قديمة.',cost:'يوم عمل أسبوعياً × عدد العملاء = وقت ضائع ضخم'},
+    suppliers:{title:'تنسيق الموردين والناقلين في وقت واحد يدوياً',desc:'تنسيق بين موردي العملاء وشركات النقل وفرق المخازن يدوياً — أي خلل في حلقة واحدة يتأخر اكتشافه ويؤثر على الكل.',cost:'تأخر اكتشاف المشاكل بمتوسط 4-8 ساعات يهدد العقود'},
+    customers:{title:'كل عميل يطلب تحديثات مستمرة بطرق مختلفة',desc:'عميل يريد تحديثاً عبر الإيميل وآخر عبر WhatsApp وثالث عبر بوابة خاصة — والفريق يدير هذا كله يدوياً.',cost:'تعدد قنوات التواصل يضاعف جهد الفريق بدون قيمة مضافة'}
+  },
+  opp:{
+    tracking:{title:'لوحة تحكم موحدة لمتابعة شحنات كل العملاء',desc:'نظام يجمع بيانات كل العملاء في مكان واحد ويتيح للفريق رؤية كل شحنة لكل عميل بشكل فوري.',tool:'Airtable + Make.com لتوحيد البيانات',m1:'↑60%',l1:'سرعة الاستجابة لمشاكل العملاء',m2:'40%',l2:'تقليل وقت التنسيق اليدوي'},
+    documents:{title:'أتمتة تحويل المستندات بين تنسيقات مختلفة',desc:'AI يقرأ مستند أي عميل بتنسيقه ويحوله للتنسيق المطلوب تلقائياً — بدون إعادة إدخال.',tool:'Make.com + ChatGPT API لتحويل التنسيقات',m1:'5h',l1:'موفرة يومياً من إدخال مزدوج',m2:'↓80%',l2:'أخطاء تحويل البيانات'},
+    reports:{title:'تقارير تلقائية مخصصة لكل عميل',desc:'نظام يولّد تقرير كل عميل بتنسيقه المطلوب تلقائياً ويرسله في الموعد المحدد — بدون تدخل بشري.',tool:'Airtable + Make.com + Google Docs templates',m1:'1 يوم',l1:'موفر أسبوعياً في التقارير',m2:'فوري',l2:'بدلاً من تقارير متأخرة'},
+    suppliers:{title:'نظام تنبيه مبكر لمشاكل الموردين والناقلين',desc:'AI يراقب أداء كل مورد وناقل ويرسل تنبيهاً فور ظهور أي انحراف — قبل أن يؤثر على العميل.',tool:'Make.com + Airtable + WhatsApp alerts',m1:'↓70%',l1:'تأثير مشاكل الموردين على العملاء',m2:'4h',l2:'موفرة من التنسيق اليدوي يومياً'},
+    customers:{title:'بوابة تحديثات تلقائية لكل عميل بقناته المفضلة',desc:'نظام يرسل التحديثات لكل عميل عبر قناته المفضلة تلقائياً — إيميل لهذا، WhatsApp لذاك، API لثالث.',tool:'Make.com + Multi-channel notifications',m1:'↑50%',l1:'رضا العملاء عن سرعة التحديثات',m2:'3h',l2:'موفرة يومياً من التواصل اليدوي'}
+  },
+  plan:{
+    tracking:[{day:'اليوم 1',title:'جرد شحنات كل عميل',steps:['كم عميلاً نشطاً لديك؟','ما النظام الذي يستخدمه كل عميل؟','أين تتجمع بيانات كل شحنة الآن؟'],active:true},{day:'اليوم 2',title:'إنشاء قاعدة بيانات موحدة',steps:['Airtable: جدول "شحنات" بعمود "العميل"','أضف حقول مشتركة بين كل العملاء','اجعله نقطة التجمع المركزية']},{day:'اليوم 3',title:'ربط مصادر البيانات بـ Make.com',steps:['لكل عميل: أنشئ Scenario يسحب بياناته','حوّل كل البيانات للتنسيق الموحد','تحقق من دقة البيانات الواردة']},{day:'اليوم 4',title:'بناء View لكل عميل',steps:['في Airtable: أنشئ View مفلترة لكل عميل','كل View تظهر فقط شحنات هذا العميل','اجعلها قابلة للمشاركة مع العميل مباشرة']},{day:'اليوم 5',title:'اختبار مع عميلين',steps:['شغّل النظام على عميلين مختلفين','تحقق من دقة البيانات لكل منهما','راجع مع الفريق: هل سهّل العمل؟']},{day:'اليوم 6',title:'إضافة تنبيهات الاستثناءات',steps:['إذا تأخرت شحنة: تنبيه للمدير المسؤول عن هذا العميل','إذا اقتربت من نقطة حرجة: تنبيه مبكر','اجعل كل تنبيه يتضمن معلومات كافية للتصرف فوراً']},{day:'اليوم 7',title:'التوسع لباقي العملاء',steps:['طبّق نفس النظام على باقي العملاء','قِس الوقت الموفر في التنسيق','قرر: هل تشارك العملاء رابط View الخاص بهم؟']}],
+    documents:[{day:'اليوم 1',title:'جرد تنسيقات مستندات كل عميل',steps:['ما التنسيقات المختلفة التي تستقبلها؟','ما البيانات المشتركة بين كل التنسيقات؟','ما أكثر تحويل يستهلك وقت الفريق؟'],active:true},{day:'اليوم 2',title:'بناء Prompt لكل تنسيق',steps:['لكل تنسيق عميل: اكتب Prompt يشرح للـ AI كيف يقرأه','أضف أمثلة حقيقية في الـ Prompt','اختبر على مستندات من الأرشيف']},{day:'اليوم 3',title:'أتمتة التحويل في Make.com',steps:['Trigger: وصول مستند جديد','Action: ChatGPT يقرأه ويحوله للتنسيق المطلوب','Output: يحفظه تلقائياً في المكان المناسب']},{day:'اليوم 4',title:'اختبار على 10 مستندات حقيقية',steps:['شغّل الأتمتة على مستندات متنوعة','قارن النتائج بالتحويل اليدوي','سجل نسبة الدقة لكل تنسيق']},{day:'اليوم 5',title:'تحسين الـ Prompts الأقل دقة',steps:['ركّز على التنسيقات التي أخطأ فيها AI','أضف تفاصيل وأمثلة إضافية للـ Prompt','أعد الاختبار وقِس التحسن']},{day:'اليوم 6',title:'تدريب الفريق على النظام',steps:['شرح كيف يعمل النظام','متى يتدخل الفريق يدوياً؟','كيف يراجعون نتائج الـ AI؟']},{day:'اليوم 7',title:'قياس الوفر وقرار التوسع',steps:['قارن وقت معالجة المستندات قبل وبعد','احسب التوفير السنوي','قرر: هل توسع لأنواع مستندات أخرى؟']}],
+    reports:[{day:'اليوم 1',title:'جرد تقارير كل عميل',steps:['اجمع نماذج التقارير لكل عميل','حدد البيانات المشتركة والخاصة','حدد تكرار كل تقرير: يومي/أسبوعي/شهري'],active:true},{day:'اليوم 2',title:'إنشاء قاعدة بيانات موحدة',steps:['Airtable: جدول بيانات مركزي','أضف عمود "العميل" لكل سطر','تأكد من وصول البيانات تلقائياً']},{day:'اليوم 3',title:'Template لأول عميل',steps:['اختر أبسط عميل وأكثره تكراراً','صمم Template في Google Docs بتنسيقه','تأكد من أن كل حقل مرتبط ببيانات في Airtable']},{day:'اليوم 4',title:'أتمتة التوليد والإرسال',steps:['Make.com: في الموعد المحدد → اسحب البيانات → ملأ Template','أرسل PDF للعميل تلقائياً','اختبر على بيانات الأسبوع الماضي']},{day:'اليوم 5',title:'مراجعة مع العميل الأول',steps:['أرسل التقرير التلقائي','اطلب رأيه في التنسيق والدقة','سجل أي تعديلات']},{day:'اليوم 6',title:'تطبيق على العملاء التالين',steps:['كرر نفس العملية مع عميل جديد','استخدم Template الأساسي مع تخصيص','قِس الوقت مقارنة بالطريقة اليدوية']},{day:'اليوم 7',title:'قياس الوفر الكامل',steps:['الوقت الموفر × عدد العملاء × 52 أسبوعاً','هل جودة التقارير تحسّنت؟','قرر: هل توسع لكل العملاء؟']}],
+    suppliers:[{day:'اليوم 1',title:'خريطة الموردين والناقلين',steps:['اجمع كل الموردين والناقلين الحاليين','لكل منهم: وقت الاستجابة المعتاد، نسبة الالتزام','حدد أكثرهم تسبباً في مشاكل'],active:true},{day:'اليوم 2',title:'إنشاء جدول الأداء في Airtable',steps:['أعمدة: المورد/الناقل، نوع الخدمة، الالتزام بالمواعيد، الجودة','سجّل آخر 3 أشهر من الأداء','لوّن: أحمر (ضعيف)، أصفر (متوسط)، أخضر (ممتاز)']},{day:'اليوم 3',title:'إنشاء تنبيهات الانحراف',steps:['Make.com: راقب أداء كل مورد','Condition: إذا تأخر أو أخل بالاتفاق','Action: تنبيه فوري للمدير المسؤول']},{day:'اليوم 4',title:'ربط التنبيه بخطة الطوارئ',steps:['لكل مورد: حدد البديل في حالة الطوارئ','أضف بيانات الاتصال بالبديل في التنبيه','اجعل التحول للبديل قراراً سريعاً']},{day:'اليوم 5',title:'اختبار سيناريو طوارئ',steps:['محاكاة: مورد يتأخر عن موعده','هل وصل التنبيه في الوقت المناسب؟','هل المعلومات كافية للتصرف فوراً؟']},{day:'اليوم 6',title:'تقرير أداء الموردين الأسبوعي',steps:['Make.com: كل أسبوع → تقرير أداء كل المورودين','أرسله للإدارة','استخدمه في مراجعات العقود']},{day:'اليوم 7',title:'مراجعة وتوسع',steps:['قارن مشاكل الموردين قبل وبعد','هل تحسّن وقت الاكتشاف؟','قرر: هل توسع لموردي الخدمات الأخرى؟']}],
+    customers:[{day:'اليوم 1',title:'خريطة قنوات تواصل كل عميل',steps:['ما القناة المفضلة لكل عميل؟','ما تكرار التحديثات التي يطلبها؟','ما أكثر ما يشكو منه في التواصل؟'],active:true},{day:'اليوم 2',title:'إنشاء جدول تفضيلات العملاء',steps:['Airtable: لكل عميل قناته المفضلة وتكرار التحديثات','أضف: البيانات التي يريدها في كل تحديث','راجع مع الفريق للتأكد من الدقة']},{day:'اليوم 3',title:'أتمتة التحديثات لأول عميل',steps:['اختر العميل الأكثر طلباً للتحديثات','Make.com: عند كل تغيير في حالة شحنته → أرسله تلقائياً','اختبر وتحقق من استلامه']},{day:'اليوم 4',title:'التوسع لعملاء آخرين',steps:['كرر نفس العملية مع عمليين آخرين','خصّص كل تحديث لتنسيق العميل','قِس الوقت الموفر من التواصل اليدوي']},{day:'اليوم 5',title:'إضافة تحديثات استثنائية',steps:['تحديث تأخير: تنبيه فوري + سبب + ETA جديد','تحديث مشكلة: تنبيه + خطة الحل','تحديث تسليم: تأكيد + دعوة للتقييم']},{day:'اليوم 6',title:'مراجعة مع العملاء',steps:['اسأل عملاءك: هل تحسّن التواصل؟','سجل أي طلبات تخصيص إضافية','عدّل بناءً على ردودهم']},{day:'اليوم 7',title:'قياس رضا العملاء',steps:['قارن شكاوى التواصل قبل وبعد','هل تحسّن معدل التجديد؟','قرر: هل توسع لكل قنوات التواصل؟']}]
+  }
+};
+sectors.land={name:'نقل بري وأسطول',pains:{tracking:{title:'جدولة الرحلات يدوياً تسبب تعارضات وهدر وقود',desc:'توزيع الرحلات يتم بناءً على خبرة المدير لا بيانات — مما يعني أحياناً سيارة فارغة في منطقة وأخرى محملة فوق طاقتها. هدر الوقود وحده 15-20% من تكاليف التشغيل.',cost:'15-20% من تكاليف الوقود قابلة للتوفير بجدولة ذكية'},documents:{title:'فواتير العملاء تُحضَّر يدوياً بعد كل رحلة',desc:'مدير الحسابات يجمع بيانات الرحلات من السائقين يدوياً ثم يبني الفاتورة — العملية تأخذ ساعات وتحتمل أخطاء في الكيلومترات أو الأوزان.',cost:'3-4 ساعات أسبوعياً في فواتير + أخطاء تستنزف الوقت في التصحيح'},reports:{title:'تقارير الأسطول والأداء تُبنى يدوياً',desc:'بيانات الرحلات متفرقة بين السائقين والمدراء — وبناء تقرير أداء الأسطول يأخذ نصف يوم عمل أسبوعياً على الأقل.',cost:'نصف يوم أسبوعياً في تقارير يمكن توليدها في دقائق'},suppliers:{title:'صيانة الأسطول تفاعلية لا استباقية',desc:'السيارات تتوقف عند العطل لا قبله — وكل توقف غير مخطط يكلف يوم إيراد + تكلفة إصلاح طارئ أغلى من الصيانة الدورية.',cost:'توقف غير مخطط = يوم إيراد ضائع + تكلفة إصلاح طارئ أعلى بـ3-4 أضعاف'},customers:{title:'العملاء لا يتلقون تحديثات عن رحلاتهم',desc:'العميل يكتشف أن شحنته تأخرت بعد أن يتصل هو — لا يوجد نظام لإشعاره تلقائياً بالتأخيرات أو التغييرات.',cost:'↑35% شكاوى عملاء مرتبطة بغياب التحديثات الاستباقية'}},opp:{tracking:{title:'جدولة الرحلات الذكية بناءً على البيانات',desc:'نظام يوزع الرحلات على السيارات بناءً على الموقع والسعة والوقود — لا تخمين ولا تعارضات.',tool:'Google Maps API + Sheets + Make.com',m1:'↓20%',l1:'تقليل تكاليف الوقود',m2:'↑30%',l2:'كفاءة استخدام الأسطول'},documents:{title:'أتمتة إصدار الفواتير بعد كل رحلة',desc:'نظام يستقبل بيانات الرحلة من السائق ويولّد الفاتورة تلقائياً ويرسلها للعميل PDF.',tool:'Google Sheets + Make.com + PDF generator',m1:'4h',l1:'موفرة أسبوعياً في إعداد الفواتير',m2:'↓90%',l2:'أخطاء التسعير والحسابات'},reports:{title:'لوحة أداء الأسطول التلقائية',desc:'نظام يجمع بيانات كل الرحلات ويولّد تقرير الأداء الأسبوعي تلقائياً مع مؤشرات الكفاءة.',tool:'Google Sheets Dashboard + Make.com',m1:'نصف يوم',l1:'موفر أسبوعياً في التقارير',m2:'فوري',l2:'مؤشرات الأداء متاحة دائماً'},suppliers:{title:'نظام تنبيه الصيانة الاستباقية',desc:'نظام يتابع كيلومترات كل سيارة ومواعيد صيانتها ويرسل تنبيهاً مبكراً قبل موعد الصيانة.',tool:'Google Sheets + Make.com + WhatsApp alerts',m1:'↓60%',l1:'حالات التوقف غير المخطط',m2:'30%',l2:'توفير في تكاليف الإصلاح الطارئ'},customers:{title:'إشعارات تلقائية للعملاء عن حالة شحناتهم',desc:'نظام يبلغ العميل تلقائياً عند انطلاق رحلته وعند التأخير وعند التسليم.',tool:'Make.com + WhatsApp/SMS API',m1:'↓35%',l1:'شكاوى العملاء من غياب التحديثات',m2:'↑40%',l2:'رضا العملاء العام'}},plan:{tracking:[{day:'اليوم 1',title:'جمع بيانات الأسطول والرحلات',steps:['اجمع: عدد السيارات، سعة كل سيارة، المناطق التي تخدمها','سجل آخر شهر من الرحلات: من أين، إلى أين، الوزن','حدد: أي السيارات الأقل كفاءة؟'],active:true},{day:'اليوم 2',title:'إنشاء جدول تتبع الرحلات',steps:['Google Sheet: أعمدة: السيارة، السائق، المسار، الكيلومترات، الوزن، التاريخ','Google Form للسائق يملأه بعد كل رحلة','اربط Form بالـ Sheet تلقائياً']},{day:'اليوم 3',title:'بناء Dashboard الأداء',steps:['في Sheets: احسب متوسط كيلومترات كل سيارة','أكثر المسارات تكراراً','تكلفة الوقود التقديرية لكل مسار']},{day:'اليوم 4',title:'تحليل بيانات الشهر الماضي',steps:['أين تكررت الرحلات الفارغة أو شبه الفارغة؟','ما المسارات التي يمكن دمجها؟','كم وقوداً يمكن توفيره بجدولة أفضل؟']},{day:'اليوم 5',title:'تطبيق الجدولة المحسّنة',steps:['بناءً على التحليل: أعد توزيع الرحلات','دمج المسارات المتقاطعة','راقب تأثير التغيير على استهلاك الوقود']},{day:'اليوم 6',title:'أتمتة تقرير كفاءة الأسطول',steps:['Make.com: كل أسبوع → اسحب بيانات الرحلات','احسب: نسبة الاستخدام، متوسط الوقود، الكفاءة','أرسل التقرير للمدير تلقائياً']},{day:'اليوم 7',title:'قياس التوفير الفعلي',steps:['قارن استهلاك الوقود قبل وبعد','احسب التوفير المالي الفعلي','قرر: هل تضيف Google Maps API للتحسين الآلي؟']}],documents:[{day:'اليوم 1',title:'جرد عمليات الفواتير الحالية',steps:['كم وقت تأخذ فاتورة واحدة؟','ما الأخطاء الأكثر تكراراً؟','كم فاتورة تُصدر أسبوعياً؟'],active:true},{day:'اليوم 2',title:'إنشاء Form للسائق',steps:['Google Form: بيانات الرحلة (المسار، الكيلومترات، الوزن، العميل)','اجعله بسيطاً جداً — السائق يملأه في دقيقة','اربطه بـ Google Sheet تلقائياً']},{day:'اليوم 3',title:'تصميم Template الفاتورة',steps:['Google Docs: Template فاتورة بالحقول المطلوبة','أضف: بيانات الشركة، العميل، الرحلة، السعر، الإجمالي','اختبر على فاتورة يدوية']},{day:'اليوم 4',title:'أتمتة إصدار الفاتورة',steps:['Make.com: عند إرسال Form من السائق → ملأ Template → أرسل PDF للعميل','اختبر على رحلة حقيقية','تحقق من صحة الحسابات']},{day:'اليوم 5',title:'اختبار على 10 رحلات',steps:['شغّل الأتمتة على 10 رحلات متنوعة','تحقق من دقة الفواتير','سجل الأخطاء وعدّل']},{day:'اليوم 6',title:'تدريب السائقين على الـ Form',steps:['علّم كل السائقين على ملء الـ Form','تأكد من فهمهم لأهمية الدقة','شغّل النظام لأسبوع بينما تتحقق يدوياً']},{day:'اليوم 7',title:'قياس الوفر',steps:['قارن وقت إعداد الفواتير قبل وبعد','احسب التوفير السنوي','قرر: هل تضيف تكامل مع نظام المحاسبة؟']}],reports:[{day:'اليوم 1',title:'تحديد مؤشرات الأداء',steps:['ما الأرقام التي تريد رؤيتها أسبوعياً؟','عدد الرحلات، الكيلومترات، استهلاك الوقود، الإيراد','من يحتاج التقرير ومتى؟'],active:true},{day:'اليوم 2',title:'إنشاء جدول بيانات مركزي',steps:['Google Sheet يجمع بيانات كل الرحلات','اربطه بـ Form السائق تلقائياً','تأكد من اتساق تنسيق البيانات']},{day:'اليوم 3',title:'بناء Dashboard الأسطول',steps:['في Sheets: احسب تلقائياً كل المؤشرات','أضف Charts: استهلاك الوقود، توزيع الرحلات، أداء كل سيارة','اجعله يتحدث تلقائياً مع كل إدخال']},{day:'اليوم 4',title:'أتمتة التقرير الأسبوعي',steps:['Make.com: كل أسبوع → اسحب البيانات','ChatGPT: اكتب ملخصاً نصياً بأبرز المؤشرات','أرسل التقرير + Dashboard للمدير']},{day:'اليوم 5',title:'اختبار لأسبوعين متتاليين',steps:['راقب دقة البيانات','تحقق من الملخص النصي لـ ChatGPT','أضف أي مؤشرات فاتتك']},{day:'اليوم 6',title:'إضافة تنبيهات استثنائية',steps:['إذا تجاوز استهلاك سيارة المعدل: تنبيه','إذا انخفضت إيرادات يوم عن المعتاد: تنبيه','اجعل النظام يتفاعل مع الانحرافات']},{day:'اليوم 7',title:'قياس الأثر',steps:['هل تحسّنت جودة القرارات؟','كم وقتاً وفّرت في التقارير؟','قرر: هل تضيف مؤشرات إضافية؟']}],suppliers:[{day:'اليوم 1',title:'جرد الأسطول ومواعيد الصيانة',steps:['اجمع: عدد السيارات، آخر صيانة لكل منها، الكيلومترات الحالية','حدد: أي السيارات تقترب من موعد صيانتها؟','ما تكلفة آخر توقف غير مخطط؟'],active:true},{day:'اليوم 2',title:'إنشاء جدول الصيانة في Sheets',steps:['أعمدة: السيارة، آخر صيانة، الكيلومترات، موعد الصيانة القادم','احسب: كيلومترات متبقية للصيانة = الهدف - الحالي','لوّن: أحمر (أقل من 500km)، أصفر (أقل من 1000km)، أخضر']},{day:'اليوم 3',title:'تنبيهات الصيانة في Make.com',steps:['Scenario: يفحص الـ Sheet يومياً','Condition: إذا وصلت سيارة لنقطة التنبيه','Action: WhatsApp للمدير + مدير المستودع']},{day:'اليوم 4',title:'ربط التنبيه بالمورد',steps:['أضف بيانات مورد الصيانة في الـ Sheet','التنبيه يتضمن: رقم السيارة، نوع الصيانة المطلوبة، بيانات الاتصال بالمورد','اجعل حجز الصيانة قراراً سريعاً']},{day:'اليوم 5',title:'اختبار النظام',steps:['تحقق من وصول التنبيهات','هل المعلومات كافية للتصرف فوراً؟','عدّل نقاط التنبيه بناءً على الواقع']},{day:'اليوم 6',title:'تتبع تكاليف الصيانة',steps:['أضف عمود "تكلفة الصيانة" في الـ Sheet','احسب: تكلفة صيانة دورية vs. تكلفة إصلاح طارئ','ابنِ حجة رقمية لأهمية الصيانة الاستباقية']},{day:'اليوم 7',title:'قياس الأثر',steps:['كم حالة توقف غير مخطط كانت قبل النظام؟','كم التوفير في تكاليف الإصلاح الطارئ؟','قرر: هل تضيف أجهزة استشعار لتتبع الكيلومترات آلياً؟']}],customers:[{day:'اليوم 1',title:'جرد شكاوى العملاء المرتبطة بالتواصل',steps:['ما أكثر شكاوى العملاء المرتبطة بغياب التحديثات؟','ما القناة التي يفضلها معظم عملائك؟','ما المعلومات التي يحتاجها العميل عن رحلته؟'],active:true},{day:'اليوم 2',title:'تصميم نصوص الإشعارات',steps:['نص "انطلقت رحلتك": رقم الرحلة + السائق + الوقت المتوقع','نص "تأخير": الاعتذار + السبب + ETA الجديد','نص "تم التسليم": التأكيد + دعوة للتقييم']},{day:'اليوم 3',title:'ربط Form السائق بالإشعارات',steps:['Make.com: عند تحديث السائق لحالة الرحلة','Action: أرسل إشعاراً للعميل عبر القناة المختارة','اختبر على رحلة حقيقية']},{day:'اليوم 4',title:'اختبار مع 5 عملاء',steps:['اختر 5 عملاء وشغّل النظام معهم','راقب استلامهم للإشعارات','اتصل بأحدهم وتحقق من رأيه']},{day:'اليوم 5',title:'تحسين النصوص بناءً على الردود',steps:['هل النصوص واضحة ومفيدة؟','هل التوقيت مناسب؟','عدّل بناءً على ردود العملاء']},{day:'اليوم 6',title:'التوسع لكل العملاء',steps:['طبّق النظام على كل العملاء النشطين','خصّص القناة لكل عميل حسب تفضيله','راقب معدل فتح الإشعارات']},{day:'اليوم 7',title:'قياس الأثر على رضا العملاء',steps:['قارن شكاوى التواصل قبل وبعد','هل تحسّن معدل التجديد مع العملاء؟','قرر: هل تضيف تقييم ما بعد التسليم؟']}]}};
+
+sectors.industrial={name:'سلاسل توريد صناعية',pains:{tracking:{title:'توقف الإنتاج بسبب نقص مفاجئ في المواد',desc:'المخزون يُدار بالخبرة والتخمين — وعندما ينفد كل شيء يتوقف الخط. كل ساعة توقف تكلف أكثر من أسبوع كامل من تكلفة إدارة مخزون ذكي.',cost:'ساعة توقف = تكلفة ثابتة جارية بدون إيراد + تأخر تسليم'},documents:{title:'التنبؤ بالطلب يعتمد على خبرة فردية',desc:'قرارات الشراء والمخزون تعتمد على رأي شخص واحد — إذا غادر أو كان مشغولاً، القرار يتأخر أو يُتخذ بمعلومات ناقصة.',cost:'فائض مخزون = رأس مال مجمد. عجز = توقف إنتاج + طلبات طارئة'},reports:{title:'تقارير الإنتاج والمخزون تُبنى يدوياً',desc:'بيانات الإنتاج متفرقة بين الأقسام — وبناء تقرير شامل يأخذ يوماً كاملاً من موظف مخصص لهذه المهمة فقط.',cost:'يوم عمل أسبوعياً في تقارير يمكن توليدها تلقائياً'},suppliers:{title:'إدارة موردين متعددين بجودات وأسعار متغيرة',desc:'مقارنة عروض الموردين وتتبع أدائهم يدوياً — والقرار يعتمد على من تذكره لا من أثبت أداءه بالبيانات.',cost:'سوء اختيار المورد يكلف 15-25% فوق السعر المثالي سنوياً'},customers:{title:'تنسيق طلبات العملاء الصناعيين يدوياً',desc:'كل عميل صناعي له متطلبات مخصصة وجداول زمنية صارمة — وتنسيق هذا مع خطط الإنتاج يدوياً يستهلك ساعات يومياً.',cost:'خطأ واحد في التنسيق = تأخر تسليم = غرامة عقدية'}},opp:{tracking:{title:'AI للتنبؤ بالطلب وإدارة المخزون تلقائياً',desc:'نظام يحلل بيانات الاستهلاك ويتنبأ باحتياجات الشهر القادم ويرسل تنبيهات الشراء قبل النفاد.',tool:'Google Sheets + ChatGPT API + Make.com للتنبيهات',m1:'↓35%',l1:'حالات توقف الإنتاج بنقص مواد',m2:'20%',l2:'تخفيض تكاليف المخزون الزائد'},documents:{title:'نموذج التنبؤ بالطلب القائم على البيانات',desc:'بدلاً من الخبرة الفردية: نظام يحلل الاستهلاك التاريخي والموسمية ويقترح كميات الشراء المثلى.',tool:'Google Sheets + ChatGPT للتحليل + تقارير تلقائية',m1:'↑40%',l1:'دقة التنبؤ بالاحتياجات',m2:'25%',l2:'تقليل تكاليف الطلبات الطارئة'},reports:{title:'لوحة إنتاج ومخزون تلقائية',desc:'نظام يجمع بيانات الإنتاج والمخزون يومياً ويولّد تقريراً شاملاً للإدارة بدون تدخل بشري.',tool:'Google Sheets Dashboard + Make.com',m1:'1 يوم',l1:'موفر أسبوعياً في التقارير',m2:'فوري',l2:'مؤشرات الإنتاج متاحة دائماً'},suppliers:{title:'نظام تقييم وإدارة الموردين بالبيانات',desc:'نظام يقيّم كل مورد بناءً على السعر والجودة والالتزام ويوصي بأفضل اختيار لكل طلب.',tool:'Airtable + Make.com + تقارير مقارنة تلقائية',m1:'15%',l1:'توفير في تكاليف الشراء',m2:'↓80%',l2:'قرارات الشراء القائمة على التخمين'},customers:{title:'أتمتة تنسيق طلبات العملاء مع خطط الإنتاج',desc:'نظام يتلقى طلبات العملاء ويتحقق من قدرة الإنتاج ويرسل تأكيداً بالجدول الزمني تلقائياً.',tool:'Google Sheets + Make.com + Email/WhatsApp automation',m1:'3h',l1:'موفرة يومياً من تنسيق يدوي',m2:'↓90%',l2:'أخطاء التنسيق مع العملاء'}},plan:{tracking:[{day:'اليوم 1',title:'جمع بيانات الاستهلاك التاريخية',steps:['اجمع استهلاك كل مادة خام خلال آخر 12 شهراً','سجل: متى حدثت حالات النقص؟ ما السبب؟','حدد المواد الأكثر تأثيراً على الإنتاج إذا نفدت'],active:true},{day:'اليوم 2',title:'إنشاء جدول مخزون ذكي',steps:['Google Sheet: المادة، الكمية الحالية، معدل الاستهلاك اليومي، نقطة إعادة الطلب','احسب: نقطة إعادة الطلب = استهلاك يومي × وقت التوريد','لوّن: أحمر/أصفر/أخضر بناءً على المستوى']},{day:'اليوم 3',title:'إنشاء تنبيهات النقص',steps:['Make.com: يفحص الـ Sheet يومياً','Condition: إذا وصلت كمية لنقطة إعادة الطلب','Action: WhatsApp لمدير المشتريات بتفاصيل المادة والكمية المطلوبة']},{day:'اليوم 4',title:'بناء نموذج التنبؤ',steps:['في ChatGPT: أدخل بيانات الاستهلاك الشهري لآخر 12 شهراً','اطلب: "تنبأ باستهلاك الأشهر الثلاثة القادمة"','قارن التنبؤ مع خبرة الفريق']},{day:'اليوم 5',title:'اختبار النظام لأسبوع كامل',steps:['شغّل التنبيهات على المواد الحرجة','تحقق: هل وصلت في الوقت المناسب؟','عدّل نقاط إعادة الطلب بناءً على الواقع']},{day:'اليوم 6',title:'ربط النظام بالموردين',steps:['أضف بيانات مورد كل مادة في الـ Sheet','التنبيه يتضمن: بيانات الاتصال بالمورد + الكمية المطلوبة','اجعل قرار الشراء فورياً عند التنبيه']},{day:'اليوم 7',title:'قياس الأثر',steps:['كم حالة نقص حدثت قبل وبعد النظام؟','احسب التوفير من تفادي الطلبات الطارئة','قرر: هل توسع لكل المواد الخام؟']}],documents:[{day:'اليوم 1',title:'جمع بيانات الاستهلاك التاريخية للتنبؤ',steps:['اجمع الاستهلاك الشهري لكل مادة خلال آخر 2 سنة','سجل: الموسمية، أسباب الارتفاع والانخفاض','حدد المواد الأكثر تقلباً في الطلب'],active:true},{day:'اليوم 2',title:'تحليل الأنماط مع ChatGPT',steps:['أدخل بيانات الاستهلاك لـ ChatGPT','اطلب: "حلل الأنماط والموسمية وتنبأ بالطلب"','سجل التنبؤات لكل مادة']},{day:'اليوم 3',title:'إنشاء نموذج التنبؤ في Sheets',steps:['أنشئ جدول: المادة، الاستهلاك التاريخي، التنبؤ الشهري القادم، هامش الأمان','اجعله يحسب تلقائياً الكمية المقترحة للشراء','راجع مع فريق الإنتاج']},{day:'اليوم 4',title:'ربط التنبؤ بقرارات الشراء',steps:['لكل مادة: إذا اقترب التنبؤ من نقطة الطلب → تنبيه مسبق بأسبوعين','أرسل للمشتريات: "يُنصح بشراء X وحدة من [المادة] قبل [التاريخ]"','اجعل القرار معززاً بالبيانات لا بالتخمين']},{day:'اليوم 5',title:'اختبار التنبؤ على شهر كامل',steps:['قارن التنبؤ بالاستهلاك الفعلي','حدد نسبة الدقة','عدّل النموذج بناءً على الانحرافات']},{day:'اليوم 6',title:'دمج التنبؤ مع خطة الإنتاج',steps:['راجع التنبؤ مع مدير الإنتاج','تحقق من توافقه مع خطة الإنتاج القادمة','عدّل التنبؤ إذا كانت هناك أوامر إنتاج استثنائية']},{day:'اليوم 7',title:'قياس دقة التنبؤ وتوفير التكاليف',steps:['كم انخفضت الطلبات الطارئة؟','كم المخزون الزائد الذي تم تفاديه؟','قرر: هل توسع لكل المواد الخام؟']}],reports:[{day:'اليوم 1',title:'تحديد مؤشرات الإنتاج المهمة',steps:['ما الأرقام التي تريد رؤيتها يومياً؟','الإنتاج الفعلي vs. المخطط، نسبة الاستخدام، مستوى المخزون','من يحتاج التقرير ومتى؟'],active:true},{day:'اليوم 2',title:'جمع مصادر البيانات',steps:['من أين تأتي بيانات الإنتاج الآن؟','كيف تصل لمدير الإنتاج حالياً؟','ما التأخير المعتاد في وصول البيانات؟']},{day:'اليوم 3',title:'إنشاء جدول بيانات مركزي',steps:['Google Sheet يجمع: الإنتاج اليومي، المخزون، الوقت التوقف، معدل الجودة','اطلب من كل قسم تحديثه يومياً','تأكد من اتساق التنسيق']},{day:'اليوم 4',title:'بناء Dashboard الإنتاج',steps:['في Sheets: Charts للمؤشرات الرئيسية','مقارنة الفعلي بالمخطط لكل يوم','لوّن الخلايا بناءً على الأداء']},{day:'اليوم 5',title:'أتمتة التقرير اليومي',steps:['Make.com: كل صباح → اسحب بيانات الأمس','ChatGPT: ولّد ملخصاً نصياً بأبرز المؤشرات','أرسل للإدارة على WhatsApp قبل 8 صباحاً']},{day:'اليوم 6',title:'إضافة تنبيهات استثنائية',steps:['إذا انخفض الإنتاج عن 90% من المخطط: تنبيه فوري','إذا ارتفعت نسبة العيوب: إشعار لمدير الجودة','اجعل النظام يتفاعل مع المشاكل فور حدوثها']},{day:'اليوم 7',title:'قياس الأثر',steps:['هل تحسّنت سرعة اكتشاف المشاكل؟','كم وقتاً وفّرت في التقارير؟','قرر: هل تضيف مؤشرات إضافية؟']}],suppliers:[{day:'اليوم 1',title:'جرد الموردين الحاليين وتقييمهم',steps:['اجمع كل الموردين النشطين','لكل مورد: السعر، وقت التوريد، نسبة الجودة، الموثوقية','حدد: أي الموردين يسببون أكثر المشاكل؟'],active:true},{day:'اليوم 2',title:'إنشاء جدول تقييم الموردين',steps:['Airtable: الاسم، المادة، السعر، وقت التوريد، الجودة، التقييم الكلي','احسب التقييم الكلي: (الجودة × 40%) + (السعر × 35%) + (الوقت × 25%)','رتّب الموردين من الأفضل للأسوأ']},{day:'اليوم 3',title:'تنبيهات انحراف الأداء',steps:['Make.com: بعد كل توريد → أدخل الأداء الفعلي','Condition: إذا انحرف أداء المورد عن المتوقع بنسبة 15%','Action: تنبيه لمدير المشتريات + تحديث التقييم']},{day:'اليوم 4',title:'مقارنة العروض التلقائية',steps:['عند كل طلب شراء: أدخل العروض من الموردين','ChatGPT: قيّم كل عرض بناءً على معايير التقييم','اقترح أفضل اختيار مع المبررات']},{day:'اليوم 5',title:'تقرير أداء الموردين الشهري',steps:['Make.com: كل شهر → تقرير أداء كل المورودين','قارن التقييمات عبر الزمن','حدد من يستحق إعادة التفاوض أو الاستبدال']},{day:'اليوم 6',title:'بناء قائمة الموردين البديلين',steps:['لكل مورد رئيسي: حدد بديلاً جاهزاً','أضف بيانات الاتصال في الـ Sheet','اجعل التحول للبديل قراراً سريعاً عند الطوارئ']},{day:'اليوم 7',title:'قياس توفير تكاليف الشراء',steps:['قارن متوسط تكلفة الوحدة قبل وبعد','كم انخفضت تكاليف الجودة الرديئة؟','قرر: هل توسع لتفاوض تعاقدات أفضل؟']}],customers:[{day:'اليوم 1',title:'جرد طلبات العملاء الصناعيين',steps:['كم طلباً تستقبل أسبوعياً؟','ما متوسط وقت الرد على طلب جديد؟','ما أكثر مصدر للأخطاء في التنسيق؟'],active:true},{day:'اليوم 2',title:'إنشاء نموذج استقبال الطلبات',steps:['Google Form: المنتج، الكمية، الجدول الزمني المطلوب، المواصفات الخاصة','اربطه بـ Google Sheet تلقائياً','تأكد من وصول كل التفاصيل المطلوبة']},{day:'اليوم 3',title:'أتمتة التحقق من قدرة الإنتاج',steps:['عند وصول طلب جديد: تحقق تلقائياً من المخزون وخطة الإنتاج','Make.com: قارن الطلب بالطاقة الإنتاجية المتاحة','وثّق النتيجة في الـ Sheet']},{day:'اليوم 4',title:'أتمتة إرسال التأكيد',steps:['إذا القدرة متاحة: أرسل تأكيداً للعميل مع الجدول الزمني تلقائياً','إذا القدرة غير متاحة: أرسل بديلاً مقترحاً','اجعل كل رد مخصصاً لبيانات العميل']},{day:'اليوم 5',title:'اختبار على 5 طلبات حقيقية',steps:['شغّل النظام على 5 طلبات جديدة','تحقق من دقة التأكيدات','راجع مع العملاء: هل التنسيق تحسّن؟']},{day:'اليوم 6',title:'إضافة تتبع حالة الطلب',steps:['كل مرحلة إنتاج: أرسل تحديثاً للعميل تلقائياً','عند الشحن: إشعار بموعد التسليم','عند التسليم: تأكيد + دعوة للتقييم']},{day:'اليوم 7',title:'قياس الأثر الكامل',steps:['كم انخفضت أخطاء التنسيق؟','هل تحسّن رضا العملاء الصناعيين؟','قرر: هل توسع لتكامل مع نظام ERP؟']}]}};
+
+// ════════════════════════════════
+// SUPPORTING DATA
+// ════════════════════════════════
+const sizeMap={small:'أقل من 50 موظف',medium:'50 – 200 موظف',large:'200 – 500 موظف',xlarge:'أكثر من 500 موظف'};
+const supplierMgmtMap={
+  manual:{pain:'كل بيانات الموردين موزعة على إيميلات وملفات Excel منفصلة — لا صورة موحدة، ولا تنبيه مبكر. الأزمة تكتشف بعد وقوعها لا قبلها.',cost:'4-6 ساعات أسبوعياً في جمع بيانات + خطر فوات تواريخ التجديد'},
+  partial:{pain:'النظام موجود لكن المتابعة لا تزال يدوية — تكلفة النظام مع جهد العمل اليدوي. أسوأ العالمين.',cost:'ازدواجية في العمل تستنزف 30-40% من وقت فريق العمليات'},
+  automated:{pain:'النظام موجود لكن هل يُستخدم لاتخاذ قرارات استراتيجية أم فقط لتسجيل البيانات؟',cost:'البيانات موجودة لكن لا ذكاء يستخرج منها insights قابلة للتنفيذ'},
+  none:{pain:'أداء الموردين يُقاس فقط عند وقوع مشكلة — دائماً في وضع رد الفعل لا الاستباق.',cost:'كل أزمة مورد تكلف 3-5 أضعاف تكلفة نظام مراقبة بسيط سنوياً'}
+};
+const supplierCountMap={few:'حتى مع عدد محدود من الموردين، غياب البيانات يعني قرارات على أساس ثقة لا حقائق.',medium:'مع 10-50 مورداً، المتابعة اليدوية تستنزف ساعات يمكن أن تذهب للعمل الاستراتيجي.',many:'مع أكثر من 50 مورداً نشطاً، كل يوم بدون نظام ذكي هو يوم خطر مخفي.'};
+const aiStatusMap={none:{level:'المرحلة صفر — لوح نظيف',note:'أفضل وضع للبداية — لا عادات سيئة يجب تغييرها. البداية الصحيحة الآن توفر سنوات من التصحيح لاحقاً.'},individual:{level:'مرحلة الاستكشاف الفردي',note:'الاهتمام موجود — المطلوب تحويله من تجارب فردية إلى استراتيجية منظمة تخدم الشركة كاملاً.'},pilot:{level:'مرحلة التجريب',note:'أنتم في المكان الصح — الخطوة التالية هي تقييم نتائج الـ Pilot وتوسيع ما نجح بشكل منهجي.'},integrated:{level:'مرحلة التبني النشط',note:'متقدمون — الفرصة الآن في التكامل بين الأدوات وقياس ROI موحد يبرر التوسع للمستوى التالي.'}};
+const barrierMap={
+  knowledge:{note:'عدم معرفة من أين تبدأ هو نقطة قوة — يعني أنك لم تضع أموالاً في الاتجاه الخاطئ بعد. الخطة أمامك الآن.',extended:'الشركات التي بدأت بخطوة واحدة صحيحة وفّرت نفسها سنوات من التجارب المكلفة.'},
+  budget:{note:'الميزانية المحدودة تعني الأولوية للحلول التي تسترد نفسها أولاً — كل خطوة في هذا التقرير مجانية أو منخفضة التكلفة.',extended:'ROI الذكاء الاصطناعي في العمليات يظهر خلال 60-90 يوماً في معظم الحالات.'},
+  time:{note:'الفريق المشغول هو السبب الأول لتبني AI — الأتمتة تستهدف تحديداً المهام التي تسرق الوقت.',extended:'ساعتان في إعداد أتمتة بسيطة يمكن أن توفر ساعتين يومياً — أي 40 ضعفاً خلال شهر.'},
+  trust:{note:'الشك الصحي في AI يؤدي لتطبيق أذكى — الخطة تبدأ بمهام محددة قابلة للقياس قبل أي توسع.',extended:'ابدأ بمهمة واحدة، قِس الدقة لأسبوعين، ثم قرر.'},
+  data:{note:'البيانات غير المنظمة هي نقطة البداية المثالية — تنظيمها بنفسه يكشف فرصاً لم تكن مرئية.',extended:'AI مثل ChatGPT يستطيع قراءة بياناتك غير المنظمة واستخراج ما تحتاجه مباشرة.'}
+};
+
+// ════════════════════════════════
+// GENERATE & RENDER
+// ════════════════════════════════
+function showForm(){document.getElementById('formView').style.display='block';document.getElementById('reportView').style.display='none';window.scrollTo(0,0)}
+
+function generateReport(){
+  const sector=document.getElementById('sector').value;
+  const size=document.getElementById('size').value;
+  const location=document.getElementById('location').value;
+  const supplier_mgmt=document.getElementById('supplier_mgmt').value;
+  const time_waste=document.getElementById('time_waste').value;
+  const supplier_count=document.getElementById('supplier_count').value;
+  const ai_status=document.getElementById('ai_status').value;
+  const barrier=document.getElementById('barrier').value;
+  const wish=document.getElementById('wish').value;
+  const errMsg=document.getElementById('errMsg');
+  if(!sector||!size||!supplier_mgmt||!time_waste||!ai_status||!barrier){errMsg.style.display='block';errMsg.scrollIntoView({behavior:'smooth'});return}
+  errMsg.style.display='none';
+
+  const sd=sectors[sector];
+  const pain=sd.pains[time_waste];
+  const opp=sd.opp[time_waste];
+  const plan=sd.plan[time_waste];
+  const supD=supplierMgmtMap[supplier_mgmt];
+  const aiD=aiStatusMap[ai_status];
+  const barrierD=barrierMap[barrier];
+  const scNote=supplierCountMap[supplier_count]||supplierCountMap['few'];
+
+  // Get 2 additional context pains (not the selected one)
+  const otherPainKeys=Object.keys(sd.pains).filter(k=>k!==time_waste);
+  const pain2=sd.pains[otherPainKeys[0]];
+  const pain3=sd.pains[otherPainKeys[1]];
+
+  const planHTML=plan.map(d=>`
+    <div class="day-item ${d.active?'active':''}">
+      <div class="day-num">${d.day}</div>
+      <div class="day-content">
+        <div class="day-title">${d.title}</div>
+        <ul class="day-steps">${d.steps.map(s=>`<li>${s}</li>`).join('')}</ul>
+      </div>
+    </div>`).join('');
+
+  const html=`
+    <div class="report-header">
+      <div class="report-tag">تقرير فرص الذكاء الاصطناعي · ${new Date().toLocaleDateString('ar-EG')} · سري</div>
+      <div class="report-company">${sd.name}</div>
+      <div class="report-meta">
+        <strong>${sizeMap[size]||size}</strong> · <strong>${location||'منطقة MENA'}</strong> · ${aiD.level}
+        <br><span style="color:var(--accent);font-size:11px;">💡 ${barrierD.note}</span>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-header-bar"><div class="section-num">01</div><div class="section-name">المرآة — هكذا تبدو عملياتك اليوم</div></div>
+      <div class="section-body">
+        <div class="pain-item" style="border-color:#333;background:#1a1a1a;margin-bottom:12px;">
+          <div class="pain-item-desc">${scNote} ${aiD.note}</div>
+        </div>
+        <div class="pain-item">
+          <div class="pain-item-title">⚡ ${pain.title}</div>
+          <div class="pain-item-desc">${pain.desc}</div>
+          <div class="pain-item-cost">→ ${pain.cost}</div>
+        </div>
+        <div class="pain-item">
+          <div class="pain-item-title">${pain2.title}</div>
+          <div class="pain-item-desc">${supD.pain}</div>
+          <div class="pain-item-cost">→ ${supD.cost}</div>
+        </div>
+        <div class="pain-item">
+          <div class="pain-item-title">${pain3.title}</div>
+          <div class="pain-item-desc">94% من شركات اللوجستيات تخطط لتبني AI خلال عامين — لكن 23% فقط لديهم استراتيجية حقيقية. الفجوة بين النية والتنفيذ هي أكبر مصدر للخسارة التنافسية الآن.</div>
+          <div class="pain-item-cost">→ الشركات ذات سلاسل التوريد المتطورة أكثر ربحية بـ23% من نظيراتها (Accenture, 2024)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-header-bar"><div class="section-num">02</div><div class="section-name">الفرصة — ما يتغير في 90 يوماً</div></div>
+      <div class="section-body">
+        ${wish?`<div class="wish-box"><div class="wish-label">▸ ما أخبرتني به — وهذا بالضبط ما تعالجه هذه الفرصة</div><div class="wish-text">"${wish}"</div><div class="wish-link">الخطة أدناه تأخذك خطوة بخطوة نحو تحقيق هذا تحديداً.</div></div>`:''}
+        <div class="barrier-note">
+          <div class="barrier-label">▸ بخصوص عائقك تحديداً</div>
+          <div class="barrier-text">${barrierD.extended}</div>
+        </div>
+        <div class="opp-highlight">
+          <div class="opp-label">▸ فرصة AI ذات الأولوية لشركتك</div>
+          <div class="opp-title">${opp.title}</div>
+          <div class="opp-desc">${opp.desc}</div>
+          <div class="opp-tool">الأداة: ${opp.tool}</div>
+        </div>
+        <div class="metrics-row">
+          <div class="metric-cell"><div class="metric-val">${opp.m1}</div><div class="metric-label">${opp.l1}</div></div>
+          <div class="metric-cell"><div class="metric-val">${opp.m2}</div><div class="metric-label">${opp.l2}</div></div>
+          <div class="metric-cell"><div class="metric-val">90 يوم</div><div class="metric-label">الوقت المتوقع لأول نتيجة قابلة للقياس</div></div>
+        </div>
+        <div class="plan-title">📅 خطة التطبيق يوماً بيوم — خصيصاً لقطاع ${sd.name}</div>
+        ${planHTML}
+      </div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-header-bar"><div class="section-num">03</div><div class="section-name">ما وراء هذه الخطوة</div></div>
+      <div class="section-body">
+        <div class="pain-item" style="border-color:#333;background:#1a1a1a;">
+          <div class="pain-item-desc" style="line-height:2;">
+            هذا التقرير يجيب على <strong style="color:var(--text);">"ماذا"</strong> ويعطيك خطة تطبيق لفرصة واحدة محددة.<br>
+            الصورة الكاملة لدمج الذكاء الاصطناعي في <strong style="color:var(--text);">كل أقسام شركتك</strong> — المبيعات، العمليات، خدمة العملاء، المالية، الموارد البشرية — تحتاج إلى خارطة طريق مصممة لنظامك ووضعك تحديداً، مع تحديد الأولويات والتسلسل الصحيح وتقدير العائد الفعلي من كل خطوة.
+          </div>
+        </div>
+        <div class="bridge-note">
+          72% من موظفي اللوجستيات تبنّوا أدوات AI في 2024 — لكن أغلبهم بدون استراتيجية موجّهة. الفرق بين تجربة وبين تحوّل حقيقي هو وجود خارطة طريق واضحة لكل قسم في شركتك.
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-block">
+      <div class="cta-title">الخطوة التالية مش معقدة</div>
+      <div class="cta-desc">
+        اللي قرأته هو جزء من الصورة الكاملة.<br><br>
+        أنا بشتغل كـ <strong style="color:var(--text);">AI Transformation Partner</strong> — مش بقدم تقرير وأمشي. بشتغل مع الشركة خطوة بخطوة على بناء نظام ذكاء اصطناعي متكامل في كل قسم — من العمليات للمبيعات لخدمة العملاء — بطريقة تناسب حجمك ووضعك الفعلي.
+      </div>
+      <div class="cta-stats">
+        <div class="cta-stat">
+          <div class="cta-stat-num">94%</div>
+          <div class="cta-stat-label">من شركات اللوجستيات تخطط لتبني AI خلال عامين (ABI Research, 2025)</div>
+        </div>
+        <div class="cta-stat">
+          <div class="cta-stat-num">23%</div>
+          <div class="cta-stat-label">فقط لديهم استراتيجية رسمية (Gartner, 2025) — هل ستكون منهم؟</div>
+        </div>
+      </div>
+      <a href="https://www.linkedin.com/in/abdelrahman-ahmed-5008083b0" target="_blank" class="cta-btn">
+        <span class="cta-btn-main">💬 راسلني على LinkedIn</span>
+        <span class="cta-btn-sub">مجاناً · بدون أي التزام · رد خلال 24 ساعة</span>
+      </a>
+      <div class="no-pitch">مش هبيعلك حاجة — بس هنشوف مع بعض فين يبدأ التغيير الحقيقي في شركتك</div>
+    </div>`;
+
+  document.getElementById('reportContent').innerHTML=html;
+  document.getElementById('formView').style.display='none';
+  document.getElementById('reportView').style.display='block';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
