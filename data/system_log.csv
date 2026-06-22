@@ -1,0 +1,11 @@
+timestamp,customer_id,action_taken,offer_type,status,error_message
+2026-06-21 14:33:11,C001,FAILED_GENERATION,none,failed,Invalid JSON from AI
+2026-06-21 14:33:12,C002,FAILED_GENERATION,none,failed,Invalid JSON from AI
+2026-06-21 14:33:12,C003,FAILED_GENERATION,none,failed,Invalid JSON from AI
+2026-06-21 14:33:12,C004,FAILED_GENERATION,none,failed,Invalid JSON from AI
+2026-06-21 14:33:13,C005,FAILED_GENERATION,none,failed,Invalid JSON from AI
+2026-06-21 15:04:58,C001,SENT_WINBACK_OFFER,bonus_points,success,demo_mode
+2026-06-21 15:04:59,C002,SENT_WINBACK_OFFER,bonus_points,success,demo_mode
+2026-06-21 15:04:59,C003,SENT_WINBACK_OFFER,informational,success,demo_mode
+2026-06-21 15:05:00,C004,SENT_WINBACK_OFFER,discount,success,demo_mode
+2026-06-21 15:05:00,C005,SENT_WINBACK_OFFER,informational,success,demo_mode

@@ -1,0 +1,6 @@
+customer_id,name,email,instagram_handle,last_purchase_date,churn_score,preferred_categories,last_campaign_date,total_purchases,days_since_last_contact
+C001,Ahmed Hassan,ahmed@example.com,ahmed_hassan_ig,2024-09-01,0.85,"Electronics,Books",,15,120
+C002,Sara Ali,sara@example.com,sara_ali_official,2024-07-15,0.92,"Fashion,Sports",,8,180
+C003,Mohamed Kamal,mo@example.com,mo_kamal,2024-10-01,0.65,"Home,Garden",,22,45
+C004,Nour Ibrahim,nour@example.com,nour_styles,2024-06-01,0.91,"Electronics",,5,200
+C005,Layla Ahmed,layla@example.com,layla_beauty,2024-08-20,0.78,"Fashion,Beauty",,12,95

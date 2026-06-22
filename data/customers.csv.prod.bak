@@ -1,0 +1,6 @@
+customer_id,name,email,instagram_handle,last_purchase_date,churn_score,preferred_categories,last_campaign_date,total_purchases,days_since_last_contact,unsubscribed,business_type
+C001,Ahmed Hassan,ahmed@example.com,ahmed_hassan_ig,2024-09-01,0.85,"Fitness,Supplements",,15,120,no,gym
+C002,Sara Ali,sara@example.com,sara_ali_official,2024-07-15,0.88,"Dental Care,Beauty",,8,180,no,dental
+C003,Mohamed Kamal,mo@example.com,mo_kamal,2024-10-01,0.72,"Business,Leadership",,22,100,no,coaching
+C004,Nour Ibrahim,nour@example.com,nour_styles,2024-06-01,0.91,"Personal Training,Fitness",,5,200,no,gym
+C005,Layla Ahmed,layla@example.com,layla_beauty,2024-08-20,0.75,"Leadership,Career",,12,95,no,coaching

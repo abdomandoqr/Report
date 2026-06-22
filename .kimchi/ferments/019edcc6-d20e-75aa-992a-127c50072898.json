@@ -1,0 +1,17 @@
+{
+  "id": "019edcc6-d20e-75aa-992a-127c50072898",
+  "name": "Database Reactivation Workflow (1)",
+  "description": "Build an automated Database Reactivation Workflow in Python that:\n1. Identifies dormant customers from Google Sheets data\n2. Generates personalized AI-driven messages via Claude API based on customer history and churn scores\n3. Sends reactivation offers via email (Resend/Gmail API)\n4. Logs all actions to a SYSTEM_LOG Google Sheet\n5. Runs on a daily schedule\n6. Has both a demo mode (sample data, console output) and production mode (real sheets, real emails)\n\nTarget clients: gyms, dental clinics, coaching businesses, and similar SMBs with 4000+ inactive leads.\n\nTech stack: Python, Google Sheets API, Anthropic Claude API, Resend/Gmail API, schedule library, GitHub Codespaces.\n\nBefore building, research:\n1. Similar Python-based customer reactivation workflows — patterns, libraries, architectures\n2. Best practices for AI-generated personalized reactivation emails — conversion vs spam, especially for gyms, dental clinics, coaching\n3. Churn scoring thresholds — are 0.7/0.8/0.9 cutoffs industry standard or should they be adjusted\n4. Email deliverability best practices in Python — Resend vs Gmail API vs SMTP for transactional reactivation emails\n5. Any existing open-source reactivation workflow projects for reference\n\nAfter research, ask 20-30 clarifying questions covering demo mode appearance, client delivery method, email language, business type handling, AI JSON failure handling, duplicate sends, client setup requirements, pricing/packaging, compliance/spam laws for Egypt/Arab markets, and more.",
+  "status": "draft",
+  "worktree": {
+    "path": "/workspaces/Report",
+    "branch": "main",
+    "commit": "def6156f9eeedafea988d078bbff6f8307d16262"
+  },
+  "scoping": {},
+  "phases": [],
+  "decisions": [],
+  "memories": [],
+  "createdAt": "2026-06-18T22:07:57.966Z",
+  "updatedAt": "2026-06-18T22:07:57.966Z"
+}
