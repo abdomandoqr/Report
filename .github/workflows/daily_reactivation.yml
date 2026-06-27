@@ -28,9 +28,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Write Google credentials file
-        if: ${{ secrets.GOOGLE_CREDENTIALS_JSON != '' }}
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
         run: |
-          echo "${{ secrets.GOOGLE_CREDENTIALS_JSON }}" | base64 -d > credentials.json
+          if [ -n "$GOOGLE_CREDENTIALS_JSON" ]; then
+            echo "$GOOGLE_CREDENTIALS_JSON" | base64 -d > credentials.json
+          fi
 
       - name: Run database reactivation workflow
         run: |
