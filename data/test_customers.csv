@@ -1,0 +1,5 @@
+customer_id,name,email,instagram_handle,last_purchase_date,churn_score,preferred_categories,last_campaign_date,total_purchases,days_since_last_contact,unsubscribed,business_type
+TEST001,Ahmed Test,abdoahmedcleanfuld@gmail.com,,2024-09-01,0.72,Electronics,,15,120,no,gym
+TEST002,Sara Test,abdoahmedcleanfuld@gmail.com,,2024-07-15,0.85,Fashion,,8,180,no,dental
+ARB001,Fattma Test,abdoahmedcleanfuld@gmail.com,,2024-09-01,0.91,Home,,18,130,no,gym
+DIS001,Discount Test,abdoahmedcleanfuld@gmail.com,,2024-05-01,0.95,Beauty,,30,190,no,gym
