@@ -265,14 +265,14 @@ def _run_campaign(
 
 
 def _demo_mode(customers: list[dict], store: StateStore):
-    """Run in demo mode: generate offers, save HTML files, print summary.
+    """Run in demo mode: generate offers, save HTML files, print summary."""
+    original_sheet_id = config.GOOGLE_SHEET_ID
+    config.GOOGLE_SHEET_ID = ""
+    try:
+        customers = fetch_customers(Path(config.CUSTOMERS_CSV_PATH))
+    finally:
+        config.GOOGLE_SHEET_ID = original_sheet_id
 
-    NOTE: `customers` must already be the final, filtered list (e.g. after
-    --customer-id filtering in main()). This function no longer re-fetches
-    customers internally — that was a bug that caused --customer-id to be
-    silently ignored in demo mode (all customers were processed instead of
-    just the requested one).
-    """
     print(f"\n========== DATABASE REACTIVATION DEMO ==========\n")
     print(f"Found {len(customers)} eligible customer{'s' if len(customers) != 1 else ''}\n")
 
@@ -388,19 +388,7 @@ def main():
 
     store = StateStore(Path(args.state_path) if args.state_path else None)
 
-    # In demo mode, always read from the local CSV (no Google Sheets dependency,
-    # no API quota usage). In production mode, use the configured source
-    # (Google Sheets if GOOGLE_SHEET_ID is set, otherwise CSV).
-    if args.demo:
-        original_sheet_id = config.GOOGLE_SHEET_ID
-        config.GOOGLE_SHEET_ID = ""
-        try:
-            customers = fetch_customers(Path(config.CUSTOMERS_CSV_PATH))
-        finally:
-            config.GOOGLE_SHEET_ID = original_sheet_id
-    else:
-        customers = fetch_customers()
-
+    customers = fetch_customers()
     if not customers:
         log_action("NONE", "NOT_FOUND", "none", "success", "")
         print("No eligible customers found today.")

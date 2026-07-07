@@ -1,0 +1,68 @@
+name: Daily Database Reactivation
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in demo mode (no emails sent)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  reactivate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Write Google credentials file
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        run: |
+          if [ -n "$GOOGLE_CREDENTIALS_JSON" ]; then
+            echo "$GOOGLE_CREDENTIALS_JSON" | base64 -d > credentials.json
+          fi
+
+      - name: Run database reactivation workflow
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+            python main.py --demo
+          else
+            python main.py --confirm
+          fi
+        env:
+          # API Keys
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+
+          # Sender Configuration
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_NAME: ${{ secrets.SENDER_NAME }}
+          SENDER_PHYSICAL_ADDRESS: ${{ secrets.SENDER_PHYSICAL_ADDRESS }}
+
+          # Instagram Credentials
+          INSTAGRAM_USERNAME: ${{ secrets.INSTAGRAM_USERNAME }}
+          INSTAGRAM_PASSWORD: ${{ secrets.INSTAGRAM_PASSWORD }}
+
+          # Google Sheets Configuration
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+
+          # Business Configuration
+          BUSINESS_TYPE: ${{ vars.BUSINESS_TYPE || 'gym' }}
+          CAMPAIGN_LANGUAGE: ${{ vars.CAMPAIGN_LANGUAGE || 'en' }}
+          CHURN_THRESHOLD_INFO: ${{ vars.CHURN_THRESHOLD_INFO || '0.70' }}
+          CHURN_THRESHOLD_BONUS: ${{ vars.CHURN_THRESHOLD_BONUS || '0.80' }}
+          CHURN_THRESHOLD_DISCOUNT: ${{ vars.CHURN_THRESHOLD_DISCOUNT || '0.90' }}
+          DISCOUNT_PCT: ${{ vars.DISCOUNT_PCT || '25' }}

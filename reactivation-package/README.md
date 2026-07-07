@@ -1,4 +1,4 @@
-chih# Database Reactivation Workflow
+# Database Reactivation Workflow
 
 An AI-powered automated email system that identifies dormant customers and sends personalized reactivation campaigns. Designed for gyms, dental clinics, and coaching businesses to win back lapsed customers with tailored offers.
 

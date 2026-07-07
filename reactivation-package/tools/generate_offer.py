@@ -92,125 +92,43 @@ def _offer_type_from_score(churn_score: float) -> str:
     return "discount"
 
 
-def _format_categories(categories_str: str) -> str:
-    """Convert underscore-separated category codes to natural Arabic list."""
-    if not categories_str:
-        return "اختياراتك المفضلة"
-    parts = [p.strip() for p in str(categories_str).split("_") if p.strip()]
-    if len(parts) == 1:
-        return parts[0]
-    return " و".join(parts)
-
-
 def _mock_offer(customer: dict, offer_type: str) -> dict:
-    """Generate a mock offer for dry-run mode.
-
-    Respects config.CAMPAIGN_LANGUAGE and the customer's business_type so
-    demo output matches the requested language and industry (e.g., Arabic
-    RTL fashion previews with category names from preferred_categories).
-    """
+    """Generate a mock offer for dry-run mode."""
     name = customer["name"]
     days = customer.get("days_since_last_contact", 90)
     discount_pct = config.DISCOUNT_PCT
-    language = config.CAMPAIGN_LANGUAGE
-    business_type = customer.get("business_type") or config.BUSINESS_TYPE or "gym"
-    categories = _format_categories(customer.get("preferred_categories", ""))
-
-    # Fashion-specific Egyptian Arabic copy that names the actual categories.
-    if language == "ar" and business_type == "fashion":
-        if offer_type == "discount":
-            title = f"{name}، خصم {discount_pct}% على كولكشن {categories} — فقط ليكي"
-            details = (
-                f"مرحبًا {name}،\n\n"
-                f"لقد مرت {days} يومًا من آخر مرة شوفناك فيها، واشتقنا ليكي.\n\n"
-                f"عشان كده جايبالك خصم {discount_pct}% على تشكيلة {categories} الجديدة. "
-                "كولكشن مميز بستايلات تحفة مستنية تتلبس.\n\n"
-                "متفوتيهوش — العرض لفترة محدودة."
-            )
-            cta = "استلام الخصم"
-        elif offer_type == "bonus_points":
-            title = f"{name}، نقاط مكافأة على {categories} مستنياكي"
-            details = (
-                f"مرحبًا {name}،\n\n"
-                f"لقد مرت {days} يومًا من آخر مرة شوفناك فيها، واشتقنا ليكي.\n\n"
-                "أضفنا نقاط مكافأة في حسابك تقدري تستخدميها على أي ستايل من "
-                f"{categories} اللي بتحبيها. دلّعي نفسك بقطعة جديدة من الكولكشن.\n\n"
-                "النقاط ما بتنتهيش — بس الكولكشن بيخلص!"
-            )
-            cta = "استخدمي نقاطك"
-        else:  # informational
-            title = f"{name}، كولكشن {categories} الجديد وصل"
-            details = (
-                f"مرحبًا {name}،\n\n"
-                f"لقد مرت {days} يومًا من آخر مرة شوفناك فيها، واشتقنا ليكي.\n\n"
-                f"وصلنا تشكيلة جديدة من {categories} بستايلات تناسب ذوقك. "
-                "لوك مميز من الكولكشن الجديد مستنيكي تتفرجي عليه.\n\n"
-                "خشي دلوقتي واختاري القطعة اللي تعجبك."
-            )
-            cta = "شوفي الكولكشن"
-    elif language == "ar":
-        if offer_type == "discount":
-            title = f"{name}، خصم {discount_pct}% على زيارتك القادمة — فقط لك"
-            details = (
-                f"مرحبًا {name}،\n\n"
-                f"لقد مرت {days} يومًا منذ آخر زيارة لك، وردنا التواصل معك شخصيًا.\n\n"
-                f"كترحيب خاص بعودتك، نقدم لك خصمًا {discount_pct}% على عملية الشراء القادمة. "
-                "هذه طريقتنا لقول إننا اشتقنا إليك ونرحب بعودتك.\n\n"
-                "لا تفوت الفرصة — هذا العرض متاح لفترة محدودة."
-            )
-            cta = "استلام الخصم"
-        elif offer_type == "bonus_points":
-            title = f"{name}، أضفنا نقاط مكافأة إلى حسابك"
-            details = (
-                f"مرحبًا {name}،\n\n"
-                f"لقد مرت {days} يومًا منذ آخر زيارة لك، وردنا التواصل معك شخصيًا.\n\n"
-                "أضفنا نقاط مكافأة إلى حسابك كشكر لك على كونك عميلًا مميزًا. "
-                "استخدمها في زيارتك القادمة ودلل نفسك بشيء مميز.\n\n"
-                "النقاط لا تنتهي صلاحيتها — خذ وقتك."
-            )
-            cta = "عرض نقاطي"
-        else:  # informational
-            title = f"{name}، اشتقنا إليك — إليك شيء مميز"
-            details = (
-                f"مرحبًا {name}،\n\n"
-                f"لقد مرت {days} يومًا منذ آخر زيارة لك، وردنا التواصل معك شخصيًا.\n\n"
-                "لدينا وصولات جديدة في الفئات التي تحبها، وكعميل مميز، "
-                "نود الترحيب بعودتك بشيء إضافي.\n\n"
-                "ألقِ نظرة — نعتقد أنك ستنبهر."
-            )
-            cta = "تسوق الآن"
-    else:
-        if offer_type == "discount":
-            title = f"{name}, {discount_pct}% off your next visit — only for you"
-            details = (
-                f"Hi {name},\n\n"
-                f"It's been {days} days since your last visit, and we wanted to reach out personally.\n\n"
-                f"As a special welcome back, we're offering you {discount_pct}% off your next purchase. "
-                "This is our way of saying we miss you and want to welcome you back.\n\n"
-                "Don't miss out — this offer is available for a limited time."
-            )
-            cta = "Claim My Discount"
-        elif offer_type == "bonus_points":
-            title = f"{name}, we added bonus points to your account"
-            details = (
-                f"Hi {name},\n\n"
-                f"It's been {days} days since your last visit, and we wanted to reach out personally.\n\n"
-                "We've added bonus reward points to your account as a thank-you for being a valued customer. "
-                "Use them on your next visit and treat yourself to something special.\n\n"
-                "Points never expire — take your time."
-            )
-            cta = "View My Points"
-        else:  # informational
-            title = f"{name}, we miss you — here is something special"
-            details = (
-                f"Hi {name},\n\n"
-                f"It's been {days} days since your last visit, and we wanted to reach out personally.\n\n"
-                "We have curated new arrivals in the categories you love, and as a valued customer, "
-                "we would love to welcome you back with something extra.\n\n"
-                "Take a look — we think you will be pleasantly surprised."
-            )
-            cta = "Shop Now"
-
+    
+    if offer_type == "discount":
+        title = f"{name}, {discount_pct}% off your next visit — only for you"
+        details = (
+            f"Hi {name},\n\n"
+            f"It's been {days} days since your last visit, and we wanted to reach out personally.\n\n"
+            f"As a special welcome back, we're offering you {discount_pct}% off your next purchase. "
+            "This is our way of saying we miss you and want to welcome you back.\n\n"
+            "Don't miss out — this offer is available for a limited time."
+        )
+        cta = "Claim My Discount"
+    elif offer_type == "bonus_points":
+        title = f"{name}, we added bonus points to your account"
+        details = (
+            f"Hi {name},\n\n"
+            f"It's been {days} days since your last visit, and we wanted to reach out personally.\n\n"
+            "We've added bonus reward points to your account as a thank-you for being a valued customer. "
+            "Use them on your next visit and treat yourself to something special.\n\n"
+            "Points never expire — take your time."
+        )
+        cta = "View My Points"
+    else:  # informational
+        title = f"{name}, we miss you — here is something special"
+        details = (
+            f"Hi {name},\n\n"
+            f"It's been {days} days since your last visit, and we wanted to reach out personally.\n\n"
+            "We have curated new arrivals in the categories you love, and as a valued customer, "
+            "we would love to welcome you back with something extra.\n\n"
+            "Take a look — we think you will be pleasantly surprised."
+        )
+        cta = "Shop Now"
+    
     return {
         "offer_type": offer_type,
         "offer_title": title,

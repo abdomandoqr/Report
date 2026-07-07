@@ -1,4 +1,4 @@
 customer_id,name,email,instagram_handle,last_purchase_date,churn_score,preferred_categories,last_campaign_date,total_purchases,days_since_last_contact,unsubscribed,business_type
 C001,نور محمد,demo1@test.com,nour_style,2024-08-15,0.91,فساتين_عبايات,,3,120,no,fashion
 C002,سارة أحمد,demo2@test.com,sara_fashion,2024-07-20,0.85,إكسسوارات_شنط,,5,150,no,fashion
-C003,ريم خالد,demo3@test.com,reem_looks,2024-09-01,0.73,ملابس كاجوال,,2,95,no,fashion
+C003,ريم خالد,demo3@test.com,reem_looks,2024-09-01,0.73,ملابس_كاجوال,,2,95,no,fashion

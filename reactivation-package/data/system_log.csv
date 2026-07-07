@@ -20,20 +20,3 @@ timestamp,customer_id,action_taken,offer_type,status,error_message
 2026-06-29 09:56:06,C003,SKIPPED,none,success,Campaign sent within last 30 days
 2026-06-29 09:56:06,C004,SKIPPED,none,success,Campaign sent within last 30 days
 2026-06-29 09:56:06,C005,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:31:52,C001,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:31:52,C002,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:31:52,C003,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:31:52,C004,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:31:52,C005,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:31:52,NONE,NOT_FOUND,none,success,
-2026-06-29 16:42:20,C001,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:42:20,C002,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:42:20,C003,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:42:20,C004,SKIPPED,none,success,Campaign sent within last 30 days
-2026-06-29 16:42:20,C005,SKIPPED,none,success,Campaign sent within last 30 days
-2026-07-02 15:01:32,C001,SKIPPED,none,success,Campaign sent within last 30 days
-2026-07-02 15:01:32,C002,SKIPPED,none,success,Campaign sent within last 30 days
-2026-07-02 15:01:32,C003,SKIPPED,none,success,Campaign sent within last 30 days
-2026-07-02 15:03:01,C001,SKIPPED,none,success,Campaign sent within last 30 days
-2026-07-02 15:03:01,C002,SKIPPED,none,success,Campaign sent within last 30 days
-2026-07-02 15:03:01,C003,SKIPPED,none,success,Campaign sent within last 30 days
