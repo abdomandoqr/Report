@@ -2,6 +2,7 @@
 """Step 2: Generate personalized offer via Claude API or dry-run fallback."""
 import json
 import sys
+import time
 from pathlib import Path
 
 # Ensure project root is in path for imports
@@ -12,8 +13,8 @@ import config
 # =============================================================================
 # Constants
 # =============================================================================
-MODEL_INFORMATIONAL = "claude-3-haiku-20240307"
-MODEL_BONUS_DISCOUNT = "claude-3-sonnet-20240229"
+MODEL_INFORMATIONAL = "claude-haiku-4-5-20251001"
+MODEL_BONUS_DISCOUNT = "claude-sonnet-4-6"
 
 DRY_RUN = config.is_dry_run()
 
@@ -313,7 +314,7 @@ def generate_offer(customer: dict, force_mock: bool = False):
             print(f"ERROR: Retry failed for customer {customer['customer_id']}. Giving up.", file=sys.stderr)
             return None
         except Exception as exc:
-            print(f"ERROR: Unexpected error calling Claude API for customer {customer['customer_id']}: {exc}", file=sys.stderr)
+            print(f"ERROR: Unexpected error calling Claude API for customer {customer['customer_id']}: {type(exc).__name__}: {exc}", file=sys.stderr)
             return None
     
     return None
